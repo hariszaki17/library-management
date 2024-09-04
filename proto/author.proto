@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package author;
+
+option go_package = "library-management/proto/gen/author;author";
+
+// The Author message contains author information
+message Author {
+    string name = 1;
+}
+
+// The request message for the GetAuthorDetails RPC
+message GetAuthorDetailsRequest {
+    string username = 1;
+}
+
+// The response message for the GetAuthorDetails RPC
+message GetAuthorDetailsResponse {
+    Author author = 1;
+}
+
+// The AuthorService service definition
+service AuthorService {
+    rpc GetAuthorDetails(GetAuthorDetailsRequest) returns (GetAuthorDetailsResponse);
+}

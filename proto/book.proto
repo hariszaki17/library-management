@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package book;
+
+option go_package = "library-management/proto/gen/book;book";
+
+// The Book message contains book information
+message Book {
+    string name = 1;
+}
+
+// The request message for the GetBookDetails RPC
+message GetBookDetailsRequest {
+    string username = 1;
+}
+
+// The response message for the GetBookDetails RPC
+message GetBookDetailsResponse {
+    Book book = 1;
+}
+
+// The BookService service definition
+service BookService {
+    rpc GetBookDetails(GetBookDetailsRequest) returns (GetBookDetailsResponse);
+}

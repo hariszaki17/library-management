@@ -1,0 +1,29 @@
+# Stage 1: Build
+FROM golang:1.23 AS builder
+
+WORKDIR /app
+
+# Copy go.mod and go.sum
+COPY api-gateway/go.mod api-gateway/go.sum ./
+
+# Copy the proto and api-gateway directories into the build context
+COPY proto/ ./proto/
+COPY api-gateway/ ./api-gateway/
+
+# Change directory to api-gateway
+WORKDIR /app/api-gateway
+
+# Download Go modules
+RUN go mod download
+
+# Build the application
+RUN go build -o api-gateway .
+
+# Stage 2: Create the final image
+FROM alpine:latest
+
+# Copy the built application from the builder stage
+COPY --from=builder /app/api-gateway/api-gateway /usr/local/bin/api-gateway
+
+EXPOSE 9090
+CMD ["api-gateway"]

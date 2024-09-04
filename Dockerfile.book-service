@@ -1,0 +1,29 @@
+# Stage 1: Build
+FROM golang:1.23 AS builder
+
+WORKDIR /app
+
+# Copy go.mod and go.sum
+COPY book-service/go.mod book-service/go.sum ./
+
+# Copy the proto and book-service directories into the build context
+COPY proto/ ./proto/
+COPY book-service/ ./book-service/
+
+# Change directory to book-service
+WORKDIR /app/book-service
+
+# Download Go modules
+RUN go mod download
+
+# Build the application
+RUN go build -o book-service .
+
+# Stage 2: Create the final image
+FROM alpine:latest
+
+# Copy the built application from the builder stage
+COPY --from=builder /app/book-service/book-service /usr/local/bin/book-service
+
+EXPOSE 9090
+CMD ["book-service"]

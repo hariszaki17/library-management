@@ -1,0 +1,35 @@
+# Stage 1: Build
+FROM golang:1.23 AS builder
+
+WORKDIR /app
+
+# Copy go.mod and go.sum
+COPY user-service/go.mod user-service/go.sum ./
+
+# Copy the proto, user-service, and .env files
+COPY proto/ ./proto/
+COPY user-service/ ./user-service/
+COPY user-service/.env ./user-service/.env
+
+# Change directory to user-service
+WORKDIR /app/user-service
+
+# Download Go modules
+RUN go mod download
+
+# Build the application for ARM and statically link it
+RUN go build -o /app/user-service/user-service .
+
+# Stage 2: Create the final image
+FROM alpine:latest
+
+# Install required libraries if needed (example)
+RUN apk add --no-cache libc6-compat
+
+# Copy the built application from the builder stage
+COPY --from=builder /app/user-service/user-service /usr/local/bin/user-service
+
+COPY --from=builder /app/user-service/.env /.env
+
+EXPOSE 9090
+CMD ["/usr/local/bin/user-service"]
