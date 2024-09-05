@@ -7,9 +7,25 @@ WORKDIR /app
 COPY api-gateway/go.mod api-gateway/go.sum ./
 
 # Copy the proto, api-gateway, and .env files
+COPY Makefile ./
 COPY proto/ ./proto/
 COPY api-gateway/ ./api-gateway/
 COPY api-gateway/.env ./api-gateway/.env
+
+# Install protoc and protoc-gen-go
+RUN apt-get update && apt-get install -y protobuf-compiler
+
+# Install protoc-gen-go and protoc-gen-go-grpc
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest \
+    && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+# Add $GOPATH/bin to PATH
+ENV PATH="${PATH}:${GOPATH}/bin"
+
+# Generate .pb.go files from .proto files
+RUN make clean
+
+RUN make gen
 
 # Change directory to api-gateway
 WORKDIR /app/api-gateway

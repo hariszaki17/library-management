@@ -22,7 +22,12 @@ gen:
 	@mkdir -p $(PROTO_GEN_DIR)
 	@for file in $(PROTO_FILES); do \
 		base=$$(basename $$file .proto); \
+		dest_dir=$(PROTO_GEN_DIR)/$$base; \
+		echo "Processing file: $$file"; \
+		echo "Base directory: $$base"; \
+		echo "DEST directory: $$dest_dir"; \
 		mkdir -p $(PROTO_GEN_DIR)/$$base; \
+		echo "Base directory: $$base"; \
 		$(PROTOC) $(PROTOC_FLAGS) \
 			--go_out=$(PROTO_GEN_DIR)/$$base \
 			--go-grpc_out=$(PROTO_GEN_DIR)/$$base \

@@ -6,8 +6,9 @@ option go_package = "library-management/proto/gen/user;user";
 
 // The User message contains user information
 message User {
-    string username = 1;
-    string password = 2;
+    uint64 id = 1;
+    string username = 2;
+    string password = 3;
 }
 
 // The request message for the GetUserDetails RPC
@@ -20,7 +21,19 @@ message GetUserDetailsResponse {
     User user = 1;
 }
 
+// The request message for the Authenticate RPC
+message AuthenticateRequest {
+    string username = 1;
+    string password = 2;
+}
+
+// The response message for the Authenticate RPC
+message AuthenticateResponse {
+    User user = 1;
+}
+
 // The UserService service definition
 service UserService {
     rpc GetUserDetails(GetUserDetailsRequest) returns (GetUserDetailsResponse);
+    rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
 }

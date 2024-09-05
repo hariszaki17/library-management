@@ -3,6 +3,7 @@ module github.com/hariszaki17/library-management/api-gateway
 go 1.23.0
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/hariszaki17/library-management/proto v0.0.0-20240904155416-d52301f5790d
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.12.0
