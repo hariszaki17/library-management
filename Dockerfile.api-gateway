@@ -6,9 +6,10 @@ WORKDIR /app
 # Copy go.mod and go.sum
 COPY api-gateway/go.mod api-gateway/go.sum ./
 
-# Copy the proto and api-gateway directories into the build context
+# Copy the proto, api-gateway, and .env files
 COPY proto/ ./proto/
 COPY api-gateway/ ./api-gateway/
+COPY api-gateway/.env ./api-gateway/.env
 
 # Change directory to api-gateway
 WORKDIR /app/api-gateway
@@ -16,14 +17,19 @@ WORKDIR /app/api-gateway
 # Download Go modules
 RUN go mod download
 
-# Build the application
-RUN go build -o api-gateway .
+# Build the application for ARM and statically link it
+RUN go build -o /app/api-gateway/api-gateway .
 
 # Stage 2: Create the final image
 FROM alpine:latest
 
+# Install required libraries if needed (example)
+RUN apk add --no-cache libc6-compat
+
 # Copy the built application from the builder stage
 COPY --from=builder /app/api-gateway/api-gateway /usr/local/bin/api-gateway
 
-EXPOSE 9090
-CMD ["api-gateway"]
+COPY --from=builder /app/api-gateway/.env /.env
+
+EXPOSE 50051
+CMD ["/usr/local/bin/api-gateway"]

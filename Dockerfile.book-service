@@ -25,5 +25,5 @@ FROM alpine:latest
 # Copy the built application from the builder stage
 COPY --from=builder /app/book-service/book-service /usr/local/bin/book-service
 
-EXPOSE 9090
+EXPOSE 50051
 CMD ["book-service"]

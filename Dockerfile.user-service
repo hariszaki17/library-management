@@ -31,5 +31,5 @@ COPY --from=builder /app/user-service/user-service /usr/local/bin/user-service
 
 COPY --from=builder /app/user-service/.env /.env
 
-EXPOSE 9090
+EXPOSE 50051
 CMD ["/usr/local/bin/user-service"]

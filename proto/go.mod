@@ -1,6 +1,6 @@
 module github.com/hariszaki17/library-management/proto
 
-go 1.22.5
+go 1.23.0
 
 require (
 	google.golang.org/grpc v1.66.0

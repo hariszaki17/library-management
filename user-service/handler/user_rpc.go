@@ -6,20 +6,21 @@ import (
 
 	pb "github.com/hariszaki17/library-management/proto/gen/user/proto"
 	"github.com/hariszaki17/library-management/user-service/usecase"
-	// Replace with your proto package
 )
 
-type GrpcHandler struct {
+func NewRPC(useCase usecase.UserUsecase) pb.UserServiceServer {
+	return &rpc{
+		userUsecase: useCase,
+	}
+}
+
+type rpc struct {
 	userUsecase usecase.UserUsecase
-	pb.UnimplementedUserServiceServer
+	pb.UnimplementedUserServiceServer // Embed the unimplemented server
 }
 
-func NewGrpcHandler(userUsecase usecase.UserUsecase) *GrpcHandler {
-	return &GrpcHandler{userUsecase: userUsecase}
-}
-
-func (h *GrpcHandler) GetUser(ctx context.Context, req *pb.GetUserDetailsRequest) (*pb.GetUserDetailsResponse, error) {
-	user, err := h.userUsecase.GetUserDetails(uint(req.Id))
+func (r *rpc) GetUserDetails(ctx context.Context, req *pb.GetUserDetailsRequest) (*pb.GetUserDetailsResponse, error) {
+	user, err := r.userUsecase.GetUserDetails(uint(req.Id))
 	if err != nil {
 		return nil, err
 	}

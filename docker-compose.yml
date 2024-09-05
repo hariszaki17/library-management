@@ -1,19 +1,19 @@
 version: '3'
 services:
-  # api-gateway:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.api-gateway
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - user-service
-  #     # - book-service
-  #     # - author-service
-  #     # - category-service
-  #   networks:
-  #     - internal-network
-  #     - external-network
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      # - book-service
+      # - author-service
+      # - category-service
+    networks:
+      - internal-network
+      - external-network
   user-service:
     build:
       context: .
@@ -21,7 +21,6 @@ services:
     depends_on:
       - postgres
     ports:
-      - "8080:8080"
       - "50051:50051"
     networks:
       - internal-network
@@ -67,9 +66,10 @@ services:
     networks:
       - internal-network
 
-
   redis:
     image: redis:6
+    ports:
+      - "6379:6379"
     networks:
       - internal-network
 
