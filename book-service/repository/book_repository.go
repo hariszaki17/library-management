@@ -14,6 +14,12 @@ import (
 
 type BookRepository interface {
 	GetBooks(ctx context.Context, page, limit int) ([]*models.Book, error)
+	CreateBookWithCtx(tx *gorm.DB, book *models.Book) (*models.Book, error)
+	UpdateBookWithCtx(tx *gorm.DB, existingModel *models.Book, updatedFields map[string]interface{}) (*models.Book, error)
+	DeleteBookWithCtx(tx *gorm.DB, id uint) error
+	Begin(ctx context.Context) *gorm.DB
+	Commit(tx *gorm.DB) *gorm.DB
+	Rollback(tx *gorm.DB) *gorm.DB
 }
 
 type bookRepository struct {
@@ -56,4 +62,40 @@ func (r *bookRepository) GetBooks(ctx context.Context, page, limit int) ([]*mode
 		log.Printf("Failed to set cache: %v", err)
 	}
 	return books, nil
+}
+
+func (r *bookRepository) CreateBookWithCtx(tx *gorm.DB, book *models.Book) (*models.Book, error) {
+	if err := tx.Create(&book).Error; err != nil {
+		return nil, err
+	}
+
+	return book, nil
+}
+
+func (r *bookRepository) UpdateBookWithCtx(tx *gorm.DB, existingModel *models.Book, updatedFields map[string]interface{}) (*models.Book, error) {
+	if err := tx.Model(&existingModel).Updates(updatedFields).Error; err != nil {
+		return nil, err
+	}
+
+	return existingModel, nil
+}
+
+func (r *bookRepository) DeleteBookWithCtx(tx *gorm.DB, id uint) error {
+	if err := tx.Delete(&models.Book{}, id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *bookRepository) Commit(tx *gorm.DB) *gorm.DB {
+	return tx.Commit()
+}
+
+func (r *bookRepository) Rollback(tx *gorm.DB) *gorm.DB {
+	return tx.Rollback()
+}
+
+func (r *bookRepository) Begin(ctx context.Context) *gorm.DB {
+	return r.db.WithContext(ctx).Begin()
 }

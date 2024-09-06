@@ -56,6 +56,40 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateBookRequest:
+    description: A request structure for creating a book
+    properties:
+      author_id:
+        type: integer
+      category_id:
+        type: integer
+      isbn:
+        type: string
+      published_at:
+        type: string
+      stock:
+        type: integer
+      title:
+        type: string
+    required:
+    - author_id
+    - category_id
+    - isbn
+    - published_at
+    - title
+    type: object
+  dto.CreateBookResponse:
+    description: A success message for book creation
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteBookResponse:
+    description: A success message for book deletion
+    properties:
+      message:
+        type: string
+    type: object
   dto.ErrorResponse:
     description: Error response structure
     properties:
@@ -90,6 +124,28 @@ definitions:
     description: User response data
     properties:
       username:
+        type: string
+    type: object
+  dto.UpdateBookRequest:
+    description: A request structure for updating a book
+    properties:
+      author_id:
+        type: integer
+      category_id:
+        type: integer
+      isbn:
+        type: string
+      published_at:
+        type: string
+      stock:
+        type: integer
+      title:
+        type: string
+    type: object
+  dto.UpdateBookResponse:
+    description: A success message for book update
+    properties:
+      message:
         type: string
     type: object
 info:
@@ -209,6 +265,113 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Get a list of books
+      tags:
+      - Books
+    post:
+      consumes:
+      - application/json
+      description: Create a new book with the provided information
+      parameters:
+      - description: Book information
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBookRequest'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateBookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create a new book
+      tags:
+      - Books
+  /books/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a book with the provided information
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteBookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete a book
+      tags:
+      - Books
+    put:
+      consumes:
+      - application/json
+      description: Update a book with the provided information
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Book information
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBookRequest'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateBookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update a book
       tags:
       - Books
   /categories:

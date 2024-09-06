@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/hariszaki17/library-management/api-gateway/config"
 	"github.com/hariszaki17/library-management/api-gateway/handler/dto"
 	"github.com/hariszaki17/library-management/api-gateway/handler/middleware"
@@ -27,6 +29,9 @@ func NewBookHandler(g *echo.Group, bookRPC pb.BookServiceClient, authMiddleware 
 	}
 
 	g.GET("", handler.GetBooks, authMiddleware)
+	g.POST("", handler.CreateBook, authMiddleware)
+	g.PUT("/:id", handler.UpdateBook, authMiddleware)
+	g.DELETE("/:id", handler.DeleteBook, authMiddleware)
 }
 
 // GetBooks godoc
@@ -93,4 +98,182 @@ func (h *BookHandler) GetBooks(c echo.Context) error {
 	}).Info("Successfully fetched books")
 
 	return c.JSON(http.StatusOK, dto.ToGetBooksResponse(resp.Books))
+}
+
+// CreateBook godoc
+// @Summary Create a new book
+// @Description Create a new book with the provided information
+// @Tags Books
+// @Accept json
+// @Produce json
+// @Param book body dto.CreateBookRequest true "Book information"
+// @Param Authorization header string true "Bearer token" Example: Bearer xxx"
+// @Success 200 {object} dto.CreateBookResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /books [post]
+func (h *BookHandler) CreateBook(c echo.Context) error {
+	requestID := middleware.GetRequestID(c)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "CreateBook",
+		"requestID":   requestID,
+	}).Info("User try to create book")
+
+	var req *dto.CreateBookRequest
+	if err := c.Bind(&req); err != nil {
+		logger.WithError(err).Error("Failed to bind create book request")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid request"})
+	}
+
+	// Validate the request
+	var validate = validator.New()
+	if err := validate.Struct(req); err != nil {
+		logrus.WithError(err).Error("Validation failed")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid request"})
+	}
+
+	// Create gRPC context with metadata
+	md := metadata.Pairs(
+		constants.RequestIDKeyCtx, requestID)
+	grpcCtx := metadata.NewOutgoingContext(c.Request().Context(), md)
+
+	rpcReq := dto.CreateBookRPCRequest(req)
+	_, err := h.bookRPC.CreateBook(grpcCtx, rpcReq)
+	if err != nil {
+		logger.WithError(err).Error("Create book failed")
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Message: fmt.Sprintf("Error while create book with err: %s", err.Error()),
+		})
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "Create Book",
+		"requestID":   requestID,
+	}).Info("Book created successfully")
+	return c.JSON(http.StatusOK, dto.ToCreateBookResponse("Book created successfully"))
+}
+
+// UpdateBook godoc
+// @Summary Update a book
+// @Description Update a book with the provided information
+// @Tags Books
+// @Accept json
+// @Produce json
+// @Param id path int true "Book ID"
+// @Param book body dto.UpdateBookRequest true "Book information"
+// @Param Authorization header string true "Bearer token" Example: Bearer xxx"
+// @Success 200 {object} dto.UpdateBookResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /books/{id} [put]
+func (h *BookHandler) UpdateBook(c echo.Context) error {
+	strId := c.Param("id")
+	requestID := middleware.GetRequestID(c)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "UpdateBook",
+		"requestID":   requestID,
+	}).Info("User try to update book")
+
+	id, err := strconv.ParseUint(strId, 10, 64)
+	if err != nil {
+		logger.WithError(err).Error("Invalid book ID")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid book ID"})
+	}
+
+	var req dto.UpdateBookRequest
+	if err := c.Bind(&req); err != nil {
+		logger.WithError(err).Error("Failed to bind update book request")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid request"})
+	}
+
+	// Validate the request
+	var validate = validator.New()
+	if err := validate.Struct(req); err != nil {
+		logrus.WithError(err).Error("Validation failed")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid request"})
+	}
+
+	// Create gRPC context with metadata
+	md := metadata.Pairs(
+		constants.RequestIDKeyCtx, requestID)
+	grpcCtx := metadata.NewOutgoingContext(c.Request().Context(), md)
+
+	rpcReq, err := dto.UpdateBookRPCRequest(uint(id), req)
+	if err != nil {
+		logrus.WithError(err).Error("Error while converting request")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: err.Error()})
+	}
+
+	_, err = h.bookRPC.UpdateBook(grpcCtx, rpcReq)
+	if err != nil {
+		logger.WithError(err).Error("Update book failed")
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Message: fmt.Sprintf("Error while update book with err: %s", err.Error()),
+		})
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "Update Book",
+		"requestID":   requestID,
+	}).Info("Book update successfully")
+	return c.JSON(http.StatusOK, dto.ToUpdateBookResponse("Book updated successfully"))
+}
+
+// DeleteBook godoc
+// @Summary Delete a book
+// @Description Delete a book with the provided information
+// @Tags Books
+// @Accept json
+// @Produce json
+// @Param id path int true "Book ID"
+// @Param Authorization header string true "Bearer token" Example: Bearer xxx"
+// @Success 200 {object} dto.DeleteBookResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /books/{id} [delete]
+func (h *BookHandler) DeleteBook(c echo.Context) error {
+	strId := c.Param("id")
+	requestID := middleware.GetRequestID(c)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "DeleteBook",
+		"requestID":   requestID,
+	}).Info("User try to delete book")
+
+	id, err := strconv.ParseUint(strId, 10, 64)
+	if err != nil {
+		logger.WithError(err).Error("Invalid book ID")
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid book ID"})
+	}
+
+	// Create gRPC context with metadata
+	md := metadata.Pairs(
+		constants.RequestIDKeyCtx, requestID)
+	grpcCtx := metadata.NewOutgoingContext(c.Request().Context(), md)
+
+	rpcReq := dto.DeleteBookRPCRequest(uint(id))
+	_, err = h.bookRPC.DeleteBook(grpcCtx, rpcReq)
+	if err != nil {
+		logger.WithError(err).Error("Delete book failed")
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Message: fmt.Sprintf("Error while delete book with err: %s", err.Error()),
+		})
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "Delete Book",
+		"requestID":   requestID,
+	}).Info("Book deleted successfully")
+	return c.JSON(http.StatusOK, dto.ToDeleteBookResponse("Book deleted successfully"))
 }

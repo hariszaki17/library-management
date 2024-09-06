@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package book;
 
+import "google/protobuf/struct.proto";
+
 option go_package = "library-management/proto/gen/book;book";
 
 // The Book message contains book information
@@ -14,6 +16,7 @@ message Book {
     string published_at = 6;
     uint64 stock = 7;
 }
+
 // The request message for the GetBooks RPC
 message GetBooksRequest {
     uint64 page = 1;
@@ -25,7 +28,46 @@ message GetBooksResponse {
     repeated Book books = 1;
 }
 
+// The response message for the CreateBook RPC
+message CreateBookResponse {
+   string message = 1;
+}
+
+// The request message for the CreateBook RPC
+message CreateBookRequest {
+    string title = 1;
+    uint64 author_id = 2;
+    uint64 category_id = 3;
+    string isbn = 4;
+    string published_at = 5;
+    uint64 stock = 6;
+}
+
+// The request message for the UpdateBook RPC
+message UpdateBookRequest {
+    google.protobuf.Struct data = 1;
+    uint64 id = 2;
+}
+
+// The response message for the UpdateBook RPC
+message UpdateBookResponse {
+   string message = 1;
+}
+
+// The request message for the DeleteBook RPC
+message DeleteBookRequest {
+    uint64 id = 1;
+}
+
+// The response message for the DeleteBook RPC
+message DeleteBookResponse {
+   string message = 1;
+}
+
 // The BookService service definition
 service BookService {
     rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
+    rpc CreateBook(CreateBookRequest) returns (CreateBookResponse);
+    rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse);
+    rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
 }

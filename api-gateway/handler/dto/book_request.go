@@ -1,7 +1,11 @@
 package dto
 
 import (
+	"fmt"
+
 	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto"
+	"github.com/hariszaki17/library-management/proto/utils"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // GetBooksResponse represents the response structure for getting books
@@ -24,6 +28,27 @@ type Book struct {
 	Stock       uint   `json:"stock"`
 }
 
+// CreateBookResponse represents the response structure for creating a book
+// @Description A success message for book creation
+// @Example {"message": "Book created successfully"}
+type CreateBookResponse struct {
+	Message string `json:"message"`
+}
+
+// UpdateBookResponse represents the response structure for updating a book
+// @Description A success message for book update
+// @Example {"message": "Book updated successfully"}
+type UpdateBookResponse struct {
+	Message string `json:"message"`
+}
+
+// DeleteBookResponse represents the response structure for deleting a book
+// @Description A success message for book deletion
+// @Example {"message": "Book deleted successfully"}
+type DeleteBookResponse struct {
+	Message string `json:"message"`
+}
+
 func ToGetBooksResponse(books []*pbBook.Book) GetBooksResponse {
 	var res []*Book
 	for _, book := range books {
@@ -39,5 +64,81 @@ func ToGetBooksResponse(books []*pbBook.Book) GetBooksResponse {
 	}
 	return GetBooksResponse{
 		Books: res,
+	}
+}
+
+func ToCreateBookResponse(message string) CreateBookResponse {
+	return CreateBookResponse{
+		Message: message,
+	}
+}
+
+func ToUpdateBookResponse(message string) UpdateBookResponse {
+	return UpdateBookResponse{
+		Message: message,
+	}
+}
+
+func ToDeleteBookResponse(message string) DeleteBookResponse {
+	return DeleteBookResponse{
+		Message: message,
+	}
+}
+
+// CreateBookRequest represents the request structure for creating a book
+// @Description A request structure for creating a book
+// @Example {"title": "Book Title", "author_id": 2, "category_id": 3, "isbn": "1234567890", "published_at": "2024-01-01T00:00:00Z", "stock": 10}
+type CreateBookRequest struct {
+	Title       string `json:"title" validate:"required"`
+	AuthorID    uint64 `json:"author_id" validate:"required"`
+	CategoryID  uint64 `json:"category_id" validate:"required"`
+	ISBN        string `json:"isbn" validate:"required"`
+	PublishedAt string `json:"published_at" validate:"required"`
+	Stock       uint64 `json:"stock"`
+}
+
+// UpdateBookRequest represents the request structure for updateing a book
+// @Description A request structure for updating a book
+// @Example {"title": "Book Title", "author_id": 2, "category_id": 3, "isbn": "1234567890", "published_at": "2024-01-01T00:00:00Z", "stock": 10}
+type UpdateBookRequest struct {
+	Title       *string `json:"title"`
+	AuthorID    *uint64 `json:"author_id"`
+	CategoryID  *uint64 `json:"category_id"`
+	ISBN        *string `json:"isbn"`
+	PublishedAt *string `json:"published_at"`
+	Stock       *uint64 `json:"stock"`
+}
+
+func CreateBookRPCRequest(req *CreateBookRequest) *pbBook.CreateBookRequest {
+	return &pbBook.CreateBookRequest{
+		Title:       req.Title,
+		AuthorId:    req.AuthorID,
+		CategoryId:  req.CategoryID,
+		Isbn:        req.ISBN,
+		PublishedAt: req.PublishedAt,
+		Stock:       req.Stock,
+	}
+}
+
+func UpdateBookRPCRequest(id uint, req UpdateBookRequest) (*pbBook.UpdateBookRequest, error) {
+	reqMap, err := utils.StructToMap(req)
+	if err != nil {
+		return nil, err
+	}
+
+	structData, err := structpb.NewStruct(reqMap)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create structpb.Struct: %v", err)
+	}
+
+	return &pbBook.UpdateBookRequest{
+		Id:   uint64(id),
+		Data: structData,
+	}, nil
+}
+
+func DeleteBookRPCRequest(id uint) *pbBook.DeleteBookRequest {
+	return &pbBook.DeleteBookRequest{
+		Id: uint64(id),
 	}
 }

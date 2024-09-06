@@ -18,3 +18,4 @@ INSERT INTO books (id, title, author_id, category_id, isbn, published_at, stock)
 INSERT INTO books (id, title, author_id, category_id, isbn, published_at, stock) VALUES (18, 'Commodo Consequat', 3, 3, '978-0-14-200067-3', '2006-03-30', 95);
 INSERT INTO books (id, title, author_id, category_id, isbn, published_at, stock) VALUES (19, 'Duis Aute', 1, 4, '978-1-56619-909-7', '2005-02-28', 100);
 INSERT INTO books (id, title, author_id, category_id, isbn, published_at, stock) VALUES (20, 'Irure Dolor', 2, 5, '978-1-4028-9462-9', '2004-01-01', 105);
+SELECT setval('books_id_seq'::regclass, (SELECT MAX(id) FROM books));

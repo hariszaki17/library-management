@@ -3,9 +3,12 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"github.com/hariszaki17/library-management/book-service/config"
 	"github.com/hariszaki17/library-management/book-service/handler/dto"
+	"github.com/hariszaki17/library-management/book-service/models"
 	"github.com/hariszaki17/library-management/book-service/usecase"
 	"github.com/hariszaki17/library-management/proto/constants"
 	pb "github.com/hariszaki17/library-management/proto/gen/book/proto"
@@ -29,6 +32,7 @@ func (r *rpc) GetBooks(ctx context.Context, req *pb.GetBooksRequest) (*pb.GetBoo
 	requestID := utils.ExtractRequestID(ctx)
 	userID := utils.ExtractUserID(ctx)
 	logger := logging.Logger.WithField("requestID", requestID)
+
 	logger.WithFields(logrus.Fields{
 		"serviceName": config.Data.ServiceName,
 		"rpc":         "GetBooks",
@@ -48,3 +52,105 @@ func (r *rpc) GetBooks(ctx context.Context, req *pb.GetBooksRequest) (*pb.GetBoo
 	}).Info("Finished RPC - GetBooks")
 	return dto.ToGetBooksResponse(books), nil
 }
+
+func (r *rpc) CreateBook(ctx context.Context, req *pb.CreateBookRequest) (*pb.CreateBookResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "CreateBook",
+		"userID":      userID,
+	}).Info("Invoke RPC - CreateBook")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+
+	// Parse the string into a time.Time object
+	parsedDate, err := time.Parse(constants.FormatDate, req.PublishedAt)
+	if err != nil {
+		logger.WithError(err).Error("Error parse PublishedAt")
+		return nil, err
+	}
+	_, err = r.bookUsecase.CreateBook(ctx, &models.Book{
+		Title:       req.Title,
+		AuthorID:    uint(req.AuthorId),
+		CategoryID:  uint(req.CategoryId),
+		ISBN:        req.Isbn,
+		PublishedAt: parsedDate,
+	})
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method bookUsecase.CreateBook")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "CreateBook",
+		"userID":      userID,
+	}).Info("Finished RPC - CreateBook")
+	return dto.ToCreateBookResponse("successfully create a book"), nil
+}
+
+func (r *rpc) UpdateBook(ctx context.Context, req *pb.UpdateBookRequest) (*pb.UpdateBookResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "UpdateBook",
+		"userID":      userID,
+	}).Info("Invoke RPC - UpdateBook")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+
+	if req.Id < 1 {
+		logger.Error("Error while calling method bookUsecase.UpdateBook, id must be > 0")
+		return nil, errors.New("id must be > 0")
+	}
+	data := req.GetData().AsMap() // Convert Struct to map[string]interface{}
+
+	_, err := r.bookUsecase.UpdateBook(ctx, uint(req.Id), data)
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method bookUsecase.UpdateBook")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "UpdateBook",
+		"userID":      userID,
+	}).Info("Finished RPC - UpdateBook")
+	return dto.ToUpdateBookResponse("successfully update a book"), nil
+}
+
+func (r *rpc) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*pb.DeleteBookResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "DeleteBook",
+		"userID":      userID,
+	}).Info("Invoke RPC - DeleteBook")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+
+	if req.Id < 1 {
+		logger.Error("Error while calling method bookUsecase.DeleteBook, id must be > 0")
+		return nil, errors.New("id must be > 0")
+	}
+
+	err := r.bookUsecase.DeleteBook(ctx, uint(req.Id))
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method bookUsecase.DeleteBook")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "DeleteBook",
+		"userID":      userID,
+	}).Info("Finished RPC - DeleteBook")
+	return dto.ToDeleteBookResponse("successfully delete a book"), nil
+}
+

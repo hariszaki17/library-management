@@ -24,3 +24,21 @@ func ToGetBooksResponse(books []*models.Book) *pb.GetBooksResponse {
 		Books: res,
 	}
 }
+
+func ToCreateBookResponse(message string) *pb.CreateBookResponse {
+	return &pb.CreateBookResponse{
+		Message: message,
+	}
+}
+
+func ToUpdateBookResponse(message string) *pb.UpdateBookResponse {
+	return &pb.UpdateBookResponse{
+		Message: message,
+	}
+}
+
+func ToDeleteBookResponse(message string) *pb.DeleteBookResponse {
+	return &pb.DeleteBookResponse{
+		Message: message,
+	}
+}
