@@ -37,7 +37,7 @@ func (r *rpc) GetBooks(ctx context.Context, req *pb.GetBooksRequest) (*pb.GetBoo
 	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
 	books, err := r.bookUsecase.GetBooks(ctx, int(req.Page), int(req.Limit))
 	if err != nil {
-		logger.WithError(err).Error("Error while calling method userUsecase.GetUserDetails")
+		logger.WithError(err).Error("Error while calling method bookUsecase.GetBooks")
 		return nil, err
 	}
 

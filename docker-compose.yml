@@ -9,7 +9,7 @@ services:
     depends_on:
       - user-service
       - book-service
-      # - author-service
+      - author-service
       # - category-service
     restart: on-failure
     networks:
@@ -39,14 +39,16 @@ services:
     networks:
       - internal-network
 
-  # author-service:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.author-service
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - internal-network
+  author-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.author-service
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+    networks:
+      - internal-network
 
   # category-service:
   #   build:

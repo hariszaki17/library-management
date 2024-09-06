@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthorService_GetAuthorDetails_FullMethodName = "/author.AuthorService/GetAuthorDetails"
+	AuthorService_GetAuthors_FullMethodName = "/author.AuthorService/GetAuthors"
 )
 
 // AuthorServiceClient is the client API for AuthorService service.
@@ -28,7 +28,7 @@ const (
 //
 // The AuthorService service definition
 type AuthorServiceClient interface {
-	GetAuthorDetails(ctx context.Context, in *GetAuthorDetailsRequest, opts ...grpc.CallOption) (*GetAuthorDetailsResponse, error)
+	GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error)
 }
 
 type authorServiceClient struct {
@@ -39,10 +39,10 @@ func NewAuthorServiceClient(cc grpc.ClientConnInterface) AuthorServiceClient {
 	return &authorServiceClient{cc}
 }
 
-func (c *authorServiceClient) GetAuthorDetails(ctx context.Context, in *GetAuthorDetailsRequest, opts ...grpc.CallOption) (*GetAuthorDetailsResponse, error) {
+func (c *authorServiceClient) GetAuthors(ctx context.Context, in *GetAuthorsRequest, opts ...grpc.CallOption) (*GetAuthorsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAuthorDetailsResponse)
-	err := c.cc.Invoke(ctx, AuthorService_GetAuthorDetails_FullMethodName, in, out, cOpts...)
+	out := new(GetAuthorsResponse)
+	err := c.cc.Invoke(ctx, AuthorService_GetAuthors_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *authorServiceClient) GetAuthorDetails(ctx context.Context, in *GetAutho
 //
 // The AuthorService service definition
 type AuthorServiceServer interface {
-	GetAuthorDetails(context.Context, *GetAuthorDetailsRequest) (*GetAuthorDetailsResponse, error)
+	GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error)
 	mustEmbedUnimplementedAuthorServiceServer()
 }
 
@@ -66,8 +66,8 @@ type AuthorServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthorServiceServer struct{}
 
-func (UnimplementedAuthorServiceServer) GetAuthorDetails(context.Context, *GetAuthorDetailsRequest) (*GetAuthorDetailsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAuthorDetails not implemented")
+func (UnimplementedAuthorServiceServer) GetAuthors(context.Context, *GetAuthorsRequest) (*GetAuthorsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAuthors not implemented")
 }
 func (UnimplementedAuthorServiceServer) mustEmbedUnimplementedAuthorServiceServer() {}
 func (UnimplementedAuthorServiceServer) testEmbeddedByValue()                       {}
@@ -90,20 +90,20 @@ func RegisterAuthorServiceServer(s grpc.ServiceRegistrar, srv AuthorServiceServe
 	s.RegisterService(&AuthorService_ServiceDesc, srv)
 }
 
-func _AuthorService_GetAuthorDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAuthorDetailsRequest)
+func _AuthorService_GetAuthors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthorsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthorServiceServer).GetAuthorDetails(ctx, in)
+		return srv.(AuthorServiceServer).GetAuthors(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthorService_GetAuthorDetails_FullMethodName,
+		FullMethod: AuthorService_GetAuthors_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthorServiceServer).GetAuthorDetails(ctx, req.(*GetAuthorDetailsRequest))
+		return srv.(AuthorServiceServer).GetAuthors(ctx, req.(*GetAuthorsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -116,8 +116,8 @@ var AuthorService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AuthorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetAuthorDetails",
-			Handler:    _AuthorService_GetAuthorDetails_Handler,
+			MethodName: "GetAuthors",
+			Handler:    _AuthorService_GetAuthors_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

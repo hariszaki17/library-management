@@ -6,20 +6,24 @@ option go_package = "library-management/proto/gen/author;author";
 
 // The Author message contains author information
 message Author {
-    string name = 1;
+    uint64 id = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string biography = 4;
+    string birthdate = 5;
+}
+// The request message for the GetAuthors RPC
+message GetAuthorsRequest {
+    uint64 page = 1;
+    uint64 limit = 2;
 }
 
-// The request message for the GetAuthorDetails RPC
-message GetAuthorDetailsRequest {
-    string username = 1;
-}
-
-// The response message for the GetAuthorDetails RPC
-message GetAuthorDetailsResponse {
-    Author author = 1;
+// The response message for the GetAuthors RPC
+message GetAuthorsResponse {
+    repeated Author authors = 1;
 }
 
 // The AuthorService service definition
 service AuthorService {
-    rpc GetAuthorDetails(GetAuthorDetailsRequest) returns (GetAuthorDetailsResponse);
+    rpc GetAuthors(GetAuthorsRequest) returns (GetAuthorsResponse);
 }

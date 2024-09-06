@@ -35,7 +35,7 @@ func NewUserHandler(g *echo.Group, userRPC pb.UserServiceClient, authMiddleware 
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param Authorization header string true "Bearer token" Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjU4NTMyODksImlkIjoyLCJ1c2VybmFtZSI6ImxhbGFsYSJ9.GYCeJu8qbggiWD14wzwwvXxn6VeVczFobXZzXl-8H6Y"
+// @Param Authorization header string true "Bearer token" Example: Bearer xxx"
 // @Success 200 {object} dto.GetUserResponse
 // @Failure 400 {object} dto.ErrorResponse
 // @Failure 500 {object} dto.ErrorResponse

@@ -16,6 +16,20 @@ definitions:
       token:
         type: string
     type: object
+  dto.Author:
+    description: Author details
+    properties:
+      biography:
+        type: string
+      birth_date:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+    type: object
   dto.Book:
     description: Book details
     properties:
@@ -39,6 +53,14 @@ definitions:
     properties:
       message:
         type: string
+    type: object
+  dto.GetAuthorsResponse:
+    description: A list of authors
+    properties:
+      authors:
+        items:
+          $ref: '#/definitions/dto.Author'
+        type: array
     type: object
   dto.GetBooksResponse:
     description: A list of books
@@ -91,6 +113,47 @@ paths:
       summary: Login
       tags:
       - auth
+  /authors:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of authors from the gRPC service
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetAuthorsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a list of authors
+      tags:
+      - Authors
   /books:
     get:
       consumes:

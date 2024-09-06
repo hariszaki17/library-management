@@ -5,4 +5,5 @@ use (
 	./proto
 	./user-service
 	./book-service
+	./author-service
 )

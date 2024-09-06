@@ -12,8 +12,10 @@ import (
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
-	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto" // Replace with your proto package
-	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto" // Replace with your proto package
+	pbAuthor "github.com/hariszaki17/library-management/proto/gen/author/proto" // Replace with your proto package
+	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto"     // Replace with your proto package
+	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto"     // Replace with your proto package
+	// Replace with your proto package
 )
 
 func main() {
@@ -36,8 +38,15 @@ func main() {
 	}
 	defer bookConnRPC.Close()
 
+	authorConnRPC, err := grpcclient.NewGrpcConn(config.Data.AuthorRPCAddress)
+	if err != nil {
+		log.Fatalf("Failed to connect to author gRPC server: %v", err)
+	}
+	defer bookConnRPC.Close()
+
 	userRPC := pbUser.NewUserServiceClient(userConnRPC)
 	bookRPC := pbBook.NewBookServiceClient(bookConnRPC)
+	authorRPC := pbAuthor.NewAuthorServiceClient(authorConnRPC)
 
 	// Start Echo server
 	e := echo.New()
@@ -57,11 +66,13 @@ func main() {
 	userGroup := e.Group("/users")
 	authGroup := e.Group("/auth")
 	bookGroup := e.Group("/books")
+	authorGroup := e.Group("/authors")
 
 	// Inject gRPC client into the handlers
-	handler.NewUserHandler(userGroup, userRPC, authMiddleware)
 	handler.NewAuthHandler(authGroup, userRPC)
+	handler.NewUserHandler(userGroup, userRPC, authMiddleware)
 	handler.NewBookHandler(bookGroup, bookRPC, authMiddleware)
+	handler.NewAuthorHandler(authorGroup, authorRPC, authMiddleware)
 
 	// Start HTTP server
 	fmt.Println("HTTP server is running on port 8080")

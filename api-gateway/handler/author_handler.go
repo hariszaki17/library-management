@@ -9,7 +9,7 @@ import (
 	"github.com/hariszaki17/library-management/api-gateway/handler/middleware"
 	"github.com/hariszaki17/library-management/api-gateway/helper"
 	"github.com/hariszaki17/library-management/proto/constants"
-	pb "github.com/hariszaki17/library-management/proto/gen/book/proto"
+	pb "github.com/hariszaki17/library-management/proto/gen/author/proto"
 	"github.com/hariszaki17/library-management/proto/logging"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc/metadata"
@@ -17,32 +17,32 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type BookHandler struct {
-	bookRPC pb.BookServiceClient
+type AuthorHandler struct {
+	authorRPC pb.AuthorServiceClient
 }
 
-func NewBookHandler(g *echo.Group, bookRPC pb.BookServiceClient, authMiddleware echo.MiddlewareFunc) {
-	handler := &BookHandler{
-		bookRPC: bookRPC,
+func NewAuthorHandler(g *echo.Group, authorRPC pb.AuthorServiceClient, authMiddleware echo.MiddlewareFunc) {
+	handler := &AuthorHandler{
+		authorRPC: authorRPC,
 	}
 
-	g.GET("", handler.GetBooks, authMiddleware)
+	g.GET("", handler.GetAuthors, authMiddleware)
 }
 
-// GetBooks godoc
-// @Summary Get a list of books
-// @Description Retrieve a paginated list of books from the gRPC service
-// @Tags Books
+// GetAuthors godoc
+// @Summary Get a list of authors
+// @Description Retrieve a paginated list of authors from the gRPC service
+// @Tags Authors
 // @Accept json
 // @Produce json
 // @Param page query int true "Page number" default(1)
 // @Param limit query int true "Number of items per page" default(10)
 // @Param Authorization header string true "Bearer token" Example: Bearer xxx"
-// @Success 200 {object} dto.GetBooksResponse
+// @Success 200 {object} dto.GetAuthorsResponse
 // @Failure 400 {object} dto.ErrorResponse
 // @Failure 500 {object} dto.ErrorResponse
-// @Router /books [get]
-func (h *BookHandler) GetBooks(c echo.Context) error {
+// @Router /authors [get]
+func (h *AuthorHandler) GetAuthors(c echo.Context) error {
 	pageStr := c.QueryParam("page")
 	limitStr := c.QueryParam("limit")
 
@@ -52,7 +52,7 @@ func (h *BookHandler) GetBooks(c echo.Context) error {
 
 	logger.WithFields(logrus.Fields{
 		"serviceName": config.Data.ServiceName,
-		"handler":     "GetBooks",
+		"handler":     "GetAuthors",
 		"userID":      userID,
 	}).Info("Fetching books")
 
@@ -79,18 +79,18 @@ func (h *BookHandler) GetBooks(c echo.Context) error {
 		constants.UserIDKeyCtx, userID)
 	grpcCtx := metadata.NewOutgoingContext(c.Request().Context(), md)
 
-	req := &pb.GetBooksRequest{Page: uint64(page), Limit: uint64(limit)}
-	resp, err := h.bookRPC.GetBooks(grpcCtx, req)
+	req := &pb.GetAuthorsRequest{Page: uint64(page), Limit: uint64(limit)}
+	resp, err := h.authorRPC.GetAuthors(grpcCtx, req)
 	if err != nil {
-		logger.WithError(err).Error("Failed to get books from gRPC server")
+		logger.WithError(err).Error("Failed to get authors from gRPC server")
 		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: "Internal server error"})
 	}
 
 	logger.WithFields(logrus.Fields{
 		"serviceName": config.Data.ServiceName,
-		"handler":     "GetBooks",
+		"handler":     "GetAuthors",
 		"userID":      userID,
-	}).Info("Successfully fetched books")
+	}).Info("Successfully fetched authors")
 
-	return c.JSON(http.StatusOK, dto.ToGetBooksResponse(resp.Books))
+	return c.JSON(http.StatusOK, dto.ToGetAuthorsResponse(resp.Authors))
 }
