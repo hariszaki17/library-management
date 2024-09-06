@@ -6,20 +6,26 @@ option go_package = "library-management/proto/gen/book;book";
 
 // The Book message contains book information
 message Book {
-    string name = 1;
+    uint64 id = 1;
+    string title = 2;
+    uint64 author_id = 3;
+    uint64 category_id = 4;
+    string isbn = 5;
+    string published_at = 6;
+    uint64 stock = 7;
+}
+// The request message for the GetBooks RPC
+message GetBooksRequest {
+    uint64 page = 1;
+    uint64 limit = 2;
 }
 
-// The request message for the GetBookDetails RPC
-message GetBookDetailsRequest {
-    string username = 1;
-}
-
-// The response message for the GetBookDetails RPC
-message GetBookDetailsResponse {
-    Book book = 1;
+// The response message for the GetBooks RPC
+message GetBooksResponse {
+    repeated Book books = 1;
 }
 
 // The BookService service definition
 service BookService {
-    rpc GetBookDetails(GetBookDetailsRequest) returns (GetBookDetailsResponse);
+    rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
 }

@@ -12,21 +12,32 @@ import (
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
-	pb "github.com/hariszaki17/library-management/proto/gen/user/proto" // Replace with your proto package
+	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto" // Replace with your proto package
+	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto" // Replace with your proto package
 )
 
 func main() {
 	// Load configuration
-	cfg := config.LoadConfig()
+	err := config.Load(".env")
+	if err != nil {
+		panic(err)
+	}
 
 	// Start gRPC client connection
-	userConnRPC, err := grpcclient.NewGrpcConn(cfg.UserRPCAddress)
+	userConnRPC, err := grpcclient.NewGrpcConn(config.Data.UserRPCAddress)
 	if err != nil {
-		log.Fatalf("Failed to connect to gRPC server: %v", err)
+		log.Fatalf("Failed to connect to user gRPC server: %v", err)
 	}
 	defer userConnRPC.Close()
 
-	userRPC := pb.NewUserServiceClient(userConnRPC)
+	bookConnRPC, err := grpcclient.NewGrpcConn(config.Data.BookRPCAddress)
+	if err != nil {
+		log.Fatalf("Failed to connect to book gRPC server: %v", err)
+	}
+	defer bookConnRPC.Close()
+
+	userRPC := pbUser.NewUserServiceClient(userConnRPC)
+	bookRPC := pbBook.NewBookServiceClient(bookConnRPC)
 
 	// Start Echo server
 	e := echo.New()
@@ -40,15 +51,19 @@ func main() {
 	// Serve swagger.json directly
 	e.Static("/swagger", "./docs")
 
+	authMiddleware := middleware.AuthJWTMiddleware(userRPC)
+
 	// Group paths for better management
 	userGroup := e.Group("/users")
 	authGroup := e.Group("/auth")
+	bookGroup := e.Group("/books")
 
 	// Inject gRPC client into the handlers
-	handler.NewUserHandler(userGroup, userRPC)
+	handler.NewUserHandler(userGroup, userRPC, authMiddleware)
 	handler.NewAuthHandler(authGroup, userRPC)
+	handler.NewBookHandler(bookGroup, bookRPC, authMiddleware)
 
 	// Start HTTP server
 	fmt.Println("HTTP server is running on port 8080")
-	log.Fatal(e.Start(fmt.Sprintf(":%s", cfg.APPPort)))
+	log.Fatal(e.Start(fmt.Sprintf(":%s", config.Data.APPPort)))
 }

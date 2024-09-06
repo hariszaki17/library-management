@@ -30,10 +30,23 @@ message AuthenticateRequest {
 // The response message for the Authenticate RPC
 message AuthenticateResponse {
     User user = 1;
+    string token = 2;
 }
+
+// The request message for the VerifyJWT RPC
+message VerifyJWTRequest {
+    string token = 1;
+}
+
+// The response message for the VerifyJWT RPC
+message VerifyJWTResponse {
+    User user = 1;
+}
+
 
 // The UserService service definition
 service UserService {
     rpc GetUserDetails(GetUserDetailsRequest) returns (GetUserDetailsResponse);
     rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+    rpc VerifyJWT(VerifyJWTRequest) returns (VerifyJWTResponse);
 }

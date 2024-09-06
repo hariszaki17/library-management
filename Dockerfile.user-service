@@ -3,11 +3,12 @@ FROM golang:1.23 AS builder
 
 WORKDIR /app
 
+COPY proto/ ./proto/
 # Copy go.mod and go.sum
 COPY user-service/go.mod user-service/go.sum ./
 
 # Copy the proto, user-service, and .env files
-COPY proto/ ./proto/
+
 COPY user-service/ ./user-service/
 COPY user-service/.env ./user-service/.env
 

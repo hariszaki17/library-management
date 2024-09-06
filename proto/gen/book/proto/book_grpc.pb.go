@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BookService_GetBookDetails_FullMethodName = "/book.BookService/GetBookDetails"
+	BookService_GetBooks_FullMethodName = "/book.BookService/GetBooks"
 )
 
 // BookServiceClient is the client API for BookService service.
@@ -28,7 +28,7 @@ const (
 //
 // The BookService service definition
 type BookServiceClient interface {
-	GetBookDetails(ctx context.Context, in *GetBookDetailsRequest, opts ...grpc.CallOption) (*GetBookDetailsResponse, error)
+	GetBooks(ctx context.Context, in *GetBooksRequest, opts ...grpc.CallOption) (*GetBooksResponse, error)
 }
 
 type bookServiceClient struct {
@@ -39,10 +39,10 @@ func NewBookServiceClient(cc grpc.ClientConnInterface) BookServiceClient {
 	return &bookServiceClient{cc}
 }
 
-func (c *bookServiceClient) GetBookDetails(ctx context.Context, in *GetBookDetailsRequest, opts ...grpc.CallOption) (*GetBookDetailsResponse, error) {
+func (c *bookServiceClient) GetBooks(ctx context.Context, in *GetBooksRequest, opts ...grpc.CallOption) (*GetBooksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetBookDetailsResponse)
-	err := c.cc.Invoke(ctx, BookService_GetBookDetails_FullMethodName, in, out, cOpts...)
+	out := new(GetBooksResponse)
+	err := c.cc.Invoke(ctx, BookService_GetBooks_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *bookServiceClient) GetBookDetails(ctx context.Context, in *GetBookDetai
 //
 // The BookService service definition
 type BookServiceServer interface {
-	GetBookDetails(context.Context, *GetBookDetailsRequest) (*GetBookDetailsResponse, error)
+	GetBooks(context.Context, *GetBooksRequest) (*GetBooksResponse, error)
 	mustEmbedUnimplementedBookServiceServer()
 }
 
@@ -66,8 +66,8 @@ type BookServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBookServiceServer struct{}
 
-func (UnimplementedBookServiceServer) GetBookDetails(context.Context, *GetBookDetailsRequest) (*GetBookDetailsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetBookDetails not implemented")
+func (UnimplementedBookServiceServer) GetBooks(context.Context, *GetBooksRequest) (*GetBooksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBooks not implemented")
 }
 func (UnimplementedBookServiceServer) mustEmbedUnimplementedBookServiceServer() {}
 func (UnimplementedBookServiceServer) testEmbeddedByValue()                     {}
@@ -90,20 +90,20 @@ func RegisterBookServiceServer(s grpc.ServiceRegistrar, srv BookServiceServer) {
 	s.RegisterService(&BookService_ServiceDesc, srv)
 }
 
-func _BookService_GetBookDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetBookDetailsRequest)
+func _BookService_GetBooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBooksRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BookServiceServer).GetBookDetails(ctx, in)
+		return srv.(BookServiceServer).GetBooks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BookService_GetBookDetails_FullMethodName,
+		FullMethod: BookService_GetBooks_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookServiceServer).GetBookDetails(ctx, req.(*GetBookDetailsRequest))
+		return srv.(BookServiceServer).GetBooks(ctx, req.(*GetBooksRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -116,8 +116,8 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BookServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetBookDetails",
-			Handler:    _BookService_GetBookDetails_Handler,
+			MethodName: "GetBooks",
+			Handler:    _BookService_GetBooks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

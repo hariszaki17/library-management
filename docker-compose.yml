@@ -8,9 +8,10 @@ services:
       - "8080:8080"
     depends_on:
       - user-service
-      # - book-service
+      - book-service
       # - author-service
       # - category-service
+    restart: on-failure
     networks:
       - internal-network
       - external-network
@@ -20,20 +21,23 @@ services:
       dockerfile: Dockerfile.user-service
     depends_on:
       - postgres
+      - redis
+    restart: on-failure
     ports:
       - "50051:50051"
     networks:
       - internal-network
 
-  # book-service:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.book-service
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   networks:
-  #     - internal-network
+  book-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.book-service
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+    networks:
+      - internal-network
 
   # author-service:
   #   build:

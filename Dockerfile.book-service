@@ -3,12 +3,14 @@ FROM golang:1.23 AS builder
 
 WORKDIR /app
 
+COPY proto/ ./proto/
 # Copy go.mod and go.sum
 COPY book-service/go.mod book-service/go.sum ./
 
-# Copy the proto and book-service directories into the build context
-COPY proto/ ./proto/
+# Copy the proto, book-service, and .env files
+
 COPY book-service/ ./book-service/
+COPY book-service/.env ./book-service/.env
 
 # Change directory to book-service
 WORKDIR /app/book-service
@@ -16,14 +18,19 @@ WORKDIR /app/book-service
 # Download Go modules
 RUN go mod download
 
-# Build the application
-RUN go build -o book-service .
+# Build the application for ARM and statically link it
+RUN go build -o /app/book-service/book-service .
 
 # Stage 2: Create the final image
 FROM alpine:latest
 
+# Install required libraries if needed (example)
+RUN apk add --no-cache libc6-compat
+
 # Copy the built application from the builder stage
 COPY --from=builder /app/book-service/book-service /usr/local/bin/book-service
 
+COPY --from=builder /app/book-service/.env /.env
+
 EXPOSE 50051
-CMD ["book-service"]
+CMD ["/usr/local/bin/book-service"]

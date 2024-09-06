@@ -1,14 +1,10 @@
 package dto
 
-import (
-	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto"
-)
-
 // AuthResponse represents the response structure for getting a user
 // @Description User response data
-// @Example {"username": "johndoe"}
+// @Example {"token": "ini token"}
 type AuthResponse struct {
-	Username string `json:"username"`
+	Token string `json:"token"`
 }
 
 // AuthResponse represents the response structure for authentication
@@ -19,8 +15,8 @@ type AuthRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
-func ToAuthResponse(user *pbUser.User) AuthResponse {
+func ToAuthResponse(token string) AuthResponse {
 	return AuthResponse{
-		Username: user.Username,
+		Token: token,
 	}
 }

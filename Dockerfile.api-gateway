@@ -27,14 +27,17 @@ RUN make clean
 
 RUN make gen
 
+# Debug: List files in proto/gen
+RUN ls -R /app/proto/gen
+
 # Change directory to api-gateway
 WORKDIR /app/api-gateway
 
 # Download Go modules
-RUN go mod download
+RUN go clean -modcache && go mod download
 
-# Build the application for ARM and statically link it
-RUN go build -o /app/api-gateway/api-gateway .
+# Build the application
+RUN go build -a -o /app/api-gateway/api-gateway /app/api-gateway/main.go
 
 # Stage 2: Create the final image
 FROM alpine:latest
@@ -44,6 +47,7 @@ RUN apk add --no-cache libc6-compat
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/api-gateway/api-gateway /usr/local/bin/api-gateway
+COPY --from=builder /app /usr/local/bin/kontolodon
 
 COPY --from=builder /app/api-gateway/.env /.env
 

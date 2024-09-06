@@ -13,8 +13,7 @@ type Config struct {
 	GRPCPort    string `env:"GRPC_PORT" env-default:"50051"`
 	RedistPort  string `env:"REDIS_PORT" env-default:"6379"`
 	RedistHost  string `env:"REDIS_HOST" env-default:"redis"`
-	SecretJWT   string `env:"SECRET_JWT" env-default:""`
-	ServiceName string `env:"SERVICE_NAME" env-default:"user-service"`
+	ServiceName string `env:"SERVICE_NAME" env-default:"book-service"`
 }
 
 var (

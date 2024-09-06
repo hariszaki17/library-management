@@ -1,34 +1,25 @@
 package config
 
 import (
-	"log"
-	"os"
-
-	"github.com/joho/godotenv"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
-	UserRPCAddress string
-	GRPCPort       string
-	APPPort        string
+	UserRPCAddress string `env:"USER_RPC_ADDRESS" env-default:"user-service:50051"`
+	BookRPCAddress string `env:"BOOK_RPC_ADDRESS" env-default:"book-service:50051"`
+	GRPCPort       string `env:"GRPC_PORT" env-default:"50051"`
+	APPPort        string `env:"APP_PORT" env-default:"8080"`
+	ServiceName    string `env:"SERVICE_NAME" env-default:"api-gateway"`
 }
 
-func LoadConfig() *Config {
-	err := godotenv.Load()
+var (
+	Data Config
+)
+
+func Load(path string) error {
+	err := cleanenv.ReadConfig(path, &Data)
 	if err != nil {
-		log.Fatal("Error loading .env file", err)
+		return err
 	}
-
-	return &Config{
-		GRPCPort:       getEnv("GRPC_PORT", "50051"),
-		APPPort:        getEnv("APP_PORT", "8080"),
-		UserRPCAddress: getEnv("USER_RPC_ADDRESS", "user-service:50051"),
-	}
-}
-
-func getEnv(key, fallback string) string {
-	if value, exists := os.LookupEnv(key); exists {
-		return value
-	}
-	return fallback
+	return nil
 }

@@ -23,16 +23,21 @@ import (
 
 func main() {
 	// Load configuration
-	cfg := config.LoadConfig()
+	err := config.Load(".env")
+	if err != nil {
+		panic(err)
+	}
 
 	// Initialize GORM DB
-	db, err := gorm.Open(postgres.Open(cfg.DSN()), &gorm.Config{})
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		config.Data.DBHost, config.Data.DBUser, config.Data.DBPassword, config.Data.DBName, config.Data.DBPort)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to the database:", err)
 	}
 
 	// Initialize Redis cache
-	redisCache := cache.NewCache("redis:6379")
+	redisCache := cache.NewCache(fmt.Sprintf("%s:%s", config.Data.RedistHost, config.Data.RedistPort))
 
 	// Migrate the schema
 	db.AutoMigrate(&models.User{})
@@ -51,7 +56,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, grpcHandler)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.GRPCPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.Data.GRPCPort))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
