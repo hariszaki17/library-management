@@ -6,4 +6,5 @@ use (
 	./user-service
 	./book-service
 	./author-service
+	./category-service
 )

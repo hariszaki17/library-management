@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CategoryService_GetCategoryDetails_FullMethodName = "/category.CategoryService/GetCategoryDetails"
+	CategoryService_GetCategories_FullMethodName = "/category.CategoryService/GetCategories"
 )
 
 // CategoryServiceClient is the client API for CategoryService service.
@@ -28,7 +28,7 @@ const (
 //
 // The CategoryService service definition
 type CategoryServiceClient interface {
-	GetCategoryDetails(ctx context.Context, in *GetCategoryDetailsRequest, opts ...grpc.CallOption) (*GetCategoryDetailsResponse, error)
+	GetCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error)
 }
 
 type categoryServiceClient struct {
@@ -39,10 +39,10 @@ func NewCategoryServiceClient(cc grpc.ClientConnInterface) CategoryServiceClient
 	return &categoryServiceClient{cc}
 }
 
-func (c *categoryServiceClient) GetCategoryDetails(ctx context.Context, in *GetCategoryDetailsRequest, opts ...grpc.CallOption) (*GetCategoryDetailsResponse, error) {
+func (c *categoryServiceClient) GetCategories(ctx context.Context, in *GetCategoriesRequest, opts ...grpc.CallOption) (*GetCategoriesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetCategoryDetailsResponse)
-	err := c.cc.Invoke(ctx, CategoryService_GetCategoryDetails_FullMethodName, in, out, cOpts...)
+	out := new(GetCategoriesResponse)
+	err := c.cc.Invoke(ctx, CategoryService_GetCategories_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *categoryServiceClient) GetCategoryDetails(ctx context.Context, in *GetC
 //
 // The CategoryService service definition
 type CategoryServiceServer interface {
-	GetCategoryDetails(context.Context, *GetCategoryDetailsRequest) (*GetCategoryDetailsResponse, error)
+	GetCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error)
 	mustEmbedUnimplementedCategoryServiceServer()
 }
 
@@ -66,8 +66,8 @@ type CategoryServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCategoryServiceServer struct{}
 
-func (UnimplementedCategoryServiceServer) GetCategoryDetails(context.Context, *GetCategoryDetailsRequest) (*GetCategoryDetailsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCategoryDetails not implemented")
+func (UnimplementedCategoryServiceServer) GetCategories(context.Context, *GetCategoriesRequest) (*GetCategoriesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategories not implemented")
 }
 func (UnimplementedCategoryServiceServer) mustEmbedUnimplementedCategoryServiceServer() {}
 func (UnimplementedCategoryServiceServer) testEmbeddedByValue()                         {}
@@ -90,20 +90,20 @@ func RegisterCategoryServiceServer(s grpc.ServiceRegistrar, srv CategoryServiceS
 	s.RegisterService(&CategoryService_ServiceDesc, srv)
 }
 
-func _CategoryService_GetCategoryDetails_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetCategoryDetailsRequest)
+func _CategoryService_GetCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCategoriesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CategoryServiceServer).GetCategoryDetails(ctx, in)
+		return srv.(CategoryServiceServer).GetCategories(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CategoryService_GetCategoryDetails_FullMethodName,
+		FullMethod: CategoryService_GetCategories_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).GetCategoryDetails(ctx, req.(*GetCategoryDetailsRequest))
+		return srv.(CategoryServiceServer).GetCategories(ctx, req.(*GetCategoriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -116,8 +116,8 @@ var CategoryService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CategoryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetCategoryDetails",
-			Handler:    _CategoryService_GetCategoryDetails_Handler,
+			MethodName: "GetCategories",
+			Handler:    _CategoryService_GetCategories_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,20 +6,21 @@ option go_package = "library-management/proto/gen/category;category";
 
 // The Category message contains category information
 message Category {
-    string name = 1;
+    uint64 id = 1;
+    string name = 2;
+}
+// The request message for the GetCategories RPC
+message GetCategoriesRequest {
+    uint64 page = 1;
+    uint64 limit = 2;
 }
 
-// The request message for the GetCategoryDetails RPC
-message GetCategoryDetailsRequest {
-    string username = 1;
-}
-
-// The response message for the GetCategoryDetails RPC
-message GetCategoryDetailsResponse {
-    Category category = 1;
+// The response message for the GetCategories RPC
+message GetCategoriesResponse {
+    repeated Category categories = 1;
 }
 
 // The CategoryService service definition
 service CategoryService {
-    rpc GetCategoryDetails(GetCategoryDetailsRequest) returns (GetCategoryDetailsResponse);
+    rpc GetCategories(GetCategoriesRequest) returns (GetCategoriesResponse);
 }

@@ -48,6 +48,14 @@ definitions:
       title:
         type: string
     type: object
+  dto.Category:
+    description: Category details
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   dto.ErrorResponse:
     description: Error response structure
     properties:
@@ -68,6 +76,14 @@ definitions:
       books:
         items:
           $ref: '#/definitions/dto.Book'
+        type: array
+    type: object
+  dto.GetCategoriesResponse:
+    description: A list of categories
+    properties:
+      categories:
+        items:
+          $ref: '#/definitions/dto.Category'
         type: array
     type: object
   dto.GetUserResponse:
@@ -112,7 +128,7 @@ paths:
             type: string
       summary: Login
       tags:
-      - auth
+      - Auth
   /authors:
     get:
       consumes:
@@ -195,6 +211,47 @@ paths:
       summary: Get a list of books
       tags:
       - Books
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of books from the gRPC service
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetCategoriesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a list of books
+      tags:
+      - Categories
   /users/{id}:
     get:
       consumes:

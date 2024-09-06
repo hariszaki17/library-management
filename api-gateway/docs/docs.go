@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "Auth"
                 ],
                 "summary": "Login",
                 "parameters": [
@@ -187,6 +187,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories": {
+            "get": {
+                "description": "Retrieve a paginated list of books from the gRPC service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get a list of books",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetCategoriesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "get": {
                 "description": "Get a user by their ID from the gRPC service",
@@ -313,6 +373,18 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Category": {
+            "description": "Category details",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.ErrorResponse": {
             "description": "Error response structure",
             "type": "object",
@@ -342,6 +414,18 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/dto.Book"
+                    }
+                }
+            }
+        },
+        "dto.GetCategoriesResponse": {
+            "description": "A list of categories",
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Category"
                     }
                 }
             }

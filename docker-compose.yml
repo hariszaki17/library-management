@@ -10,7 +10,7 @@ services:
       - user-service
       - book-service
       - author-service
-      # - category-service
+      - category-service
     restart: on-failure
     networks:
       - internal-network
@@ -50,14 +50,16 @@ services:
     networks:
       - internal-network
 
-  # category-service:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.category-service
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - internal-network
+  category-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.category-service
+    depends_on:
+      - postgres
+      - redis
+    restart: on-failure
+    networks:
+      - internal-network
 
   postgres:
     image: postgres:14

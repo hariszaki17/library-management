@@ -12,9 +12,10 @@ import (
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
-	pbAuthor "github.com/hariszaki17/library-management/proto/gen/author/proto" // Replace with your proto package
-	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto"     // Replace with your proto package
-	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto"     // Replace with your proto package
+	pbAuthor "github.com/hariszaki17/library-management/proto/gen/author/proto"     // Replace with your proto package
+	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto"         // Replace with your proto package
+	pbCategory "github.com/hariszaki17/library-management/proto/gen/category/proto" // Replace with your proto package
+	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto"         // Replace with your proto package
 	// Replace with your proto package
 )
 
@@ -44,9 +45,16 @@ func main() {
 	}
 	defer bookConnRPC.Close()
 
+	categoryConnRPC, err := grpcclient.NewGrpcConn(config.Data.CategoryRPCAddress)
+	if err != nil {
+		log.Fatalf("Failed to connect to category gRPC server: %v", err)
+	}
+	defer categoryConnRPC.Close()
+
 	userRPC := pbUser.NewUserServiceClient(userConnRPC)
 	bookRPC := pbBook.NewBookServiceClient(bookConnRPC)
 	authorRPC := pbAuthor.NewAuthorServiceClient(authorConnRPC)
+	categoryRPC := pbCategory.NewCategoryServiceClient(categoryConnRPC)
 
 	// Start Echo server
 	e := echo.New()
@@ -67,12 +75,14 @@ func main() {
 	authGroup := e.Group("/auth")
 	bookGroup := e.Group("/books")
 	authorGroup := e.Group("/authors")
+	categoryGroup := e.Group("/categories")
 
 	// Inject gRPC client into the handlers
 	handler.NewAuthHandler(authGroup, userRPC)
 	handler.NewUserHandler(userGroup, userRPC, authMiddleware)
 	handler.NewBookHandler(bookGroup, bookRPC, authMiddleware)
 	handler.NewAuthorHandler(authorGroup, authorRPC, authMiddleware)
+	handler.NewCategoryHandler(categoryGroup, categoryRPC, authMiddleware)
 
 	// Start HTTP server
 	fmt.Println("HTTP server is running on port 8080")
