@@ -9,3 +9,4 @@ INSERT INTO authors (created_at, updated_at, deleted_at, first_name, last_name, 
 ('2024-01-01 12:00:00', '2024-01-01 12:00:00', NULL, 'Sophia', 'Anderson', 'Notable for her historical biographies.', '1984-03-10'),
 ('2024-01-01 12:00:00', '2024-01-01 12:00:00', NULL, 'William', 'Thomas', 'An award-winning travel writer.', '1968-06-30'),
 ('2024-01-01 12:00:00', '2024-01-01 12:00:00', NULL, 'Ava', 'Jackson', 'Best known for her contemporary romance novels.', '1992-10-25');
+SELECT setval('authors_id_seq'::regclass, (SELECT MAX(id) FROM authors));

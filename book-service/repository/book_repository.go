@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/hariszaki17/library-management/book-service/cache"
 	"github.com/hariszaki17/library-management/book-service/models"
+	"github.com/hariszaki17/library-management/proto/cache"
 	"gorm.io/gorm"
 )
 

@@ -56,20 +56,53 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateAuthorRequest:
+    description: A request structure for creating an author
+    properties:
+      biography:
+        example: An accomplished author.
+        type: string
+      birth_date:
+        example: "1980-01-01"
+        type: string
+      first_name:
+        example: John
+        type: string
+      last_name:
+        example: Doe
+        type: string
+    required:
+    - biography
+    - birth_date
+    - first_name
+    - last_name
+    type: object
+  dto.CreateAuthorResponse:
+    description: A success message for author creation
+    properties:
+      message:
+        type: string
+    type: object
   dto.CreateBookRequest:
     description: A request structure for creating a book
     properties:
       author_id:
+        example: 2
         type: integer
       category_id:
+        example: 3
         type: integer
       isbn:
+        example: "1234567890"
         type: string
       published_at:
+        example: "2024-01-01T00:00:00Z"
         type: string
       stock:
+        example: 10
         type: integer
       title:
+        example: Book Title
         type: string
     required:
     - author_id
@@ -84,8 +117,35 @@ definitions:
       message:
         type: string
     type: object
+  dto.CreateCategoryRequest:
+    description: A request structure for creating a cateogry
+    properties:
+      name:
+        example: Category Name
+        type: string
+    required:
+    - name
+    type: object
+  dto.CreateCategoryResponse:
+    description: A success message for category creation
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteAuthorResponse:
+    description: A success message for author deletion
+    properties:
+      message:
+        type: string
+    type: object
   dto.DeleteBookResponse:
     description: A success message for book deletion
+    properties:
+      message:
+        type: string
+    type: object
+  dto.DeleteCategoryResponse:
+    description: A success message for category deletion
     properties:
       message:
         type: string
@@ -126,24 +186,67 @@ definitions:
       username:
         type: string
     type: object
+  dto.UpdateAuthorRequest:
+    description: A request structure for updating an author
+    properties:
+      biography:
+        example: An accomplished author.
+        type: string
+      birth_date:
+        example: "1990-01-01"
+        type: string
+      first_name:
+        example: John Updated
+        type: string
+      last_name:
+        example: Doe Update
+        type: string
+    type: object
+  dto.UpdateAuthorResponse:
+    description: A success message for author update
+    properties:
+      message:
+        type: string
+    type: object
   dto.UpdateBookRequest:
     description: A request structure for updating a book
     properties:
       author_id:
+        example: 2
         type: integer
       category_id:
+        example: 3
         type: integer
       isbn:
+        example: "1234567890"
         type: string
       published_at:
+        example: "2024-01-01T00:00:00Z"
         type: string
       stock:
+        example: 10
         type: integer
       title:
+        example: Book Title
         type: string
     type: object
   dto.UpdateBookResponse:
     description: A success message for book update
+    properties:
+      message:
+        type: string
+    type: object
+  dto.UpdateCategoryRequest:
+    description: A request structure for updating a cateogry
+    properties:
+      name:
+        example: Category Name Updated
+        type: string
+    required:
+    - name
+    type: object
+  dto.UpdateCategoryResponse:
+    description: A success message for category update
     properties:
       message:
         type: string
@@ -224,6 +327,113 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Get a list of authors
+      tags:
+      - Authors
+    post:
+      consumes:
+      - application/json
+      description: Create a new author with the provided information
+      parameters:
+      - description: Author information
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateAuthorRequest'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateAuthorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create a new author
+      tags:
+      - Authors
+  /authors/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a author with the provided information
+      parameters:
+      - description: Author ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteAuthorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete a author
+      tags:
+      - Authors
+    put:
+      consumes:
+      - application/json
+      description: Update a author with the provided information
+      parameters:
+      - description: Author ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Author information
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateAuthorRequest'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateAuthorResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update a author
       tags:
       - Authors
   /books:
@@ -378,7 +588,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve a paginated list of books from the gRPC service
+      description: Retrieve a paginated list of categories from the gRPC service
       parameters:
       - default: 1
         description: Page number
@@ -412,7 +622,114 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get a list of books
+      summary: Get a list of categories
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new category with the provided information
+      parameters:
+      - description: Category information
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCategoryRequest'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.CreateCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Create a new category
+      tags:
+      - Categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a category with the provided information
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeleteCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Delete a category
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: Update a category with the provided information
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category information
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCategoryRequest'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UpdateCategoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Update a category
       tags:
       - Categories
   /users/{id}:

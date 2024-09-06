@@ -22,3 +22,21 @@ func ToGetAuthorsResponse(authors []*models.Author) *pb.GetAuthorsResponse {
 		Authors: res,
 	}
 }
+
+func ToCreateAuthorResponse(message string) *pb.CreateAuthorResponse {
+	return &pb.CreateAuthorResponse{
+		Message: message,
+	}
+}
+
+func ToUpdateAuthorResponse(message string) *pb.UpdateAuthorResponse {
+	return &pb.UpdateAuthorResponse{
+		Message: message,
+	}
+}
+
+func ToDeleteAuthorResponse(message string) *pb.DeleteAuthorResponse {
+	return &pb.DeleteAuthorResponse{
+		Message: message,
+	}
+}

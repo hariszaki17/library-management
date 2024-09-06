@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/hariszaki17/library-management/book-service/cache"
+	"github.com/hariszaki17/library-management/proto/cache"
 	"github.com/hariszaki17/library-management/book-service/config"
 	"github.com/hariszaki17/library-management/book-service/models"
 	"github.com/hariszaki17/library-management/book-service/repository"

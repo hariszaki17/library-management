@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package category;
 
+import "google/protobuf/struct.proto";
+
 option go_package = "library-management/proto/gen/category;category";
 
 // The Category message contains category information
@@ -20,7 +22,42 @@ message GetCategoriesResponse {
     repeated Category categories = 1;
 }
 
+// The response message for the CreateCategory RPC
+message CreateCategoryResponse {
+   string message = 1;
+}
+
+// The request message for the CreateCategory RPC
+message CreateCategoryRequest {
+    string name = 1;
+}
+
+// The request message for the UpdateCategory RPC
+message UpdateCategoryRequest {
+    google.protobuf.Struct data = 1;
+    uint64 id = 2;
+}
+
+// The response message for the UpdateCategory RPC
+message UpdateCategoryResponse {
+   string message = 1;
+}
+
+// The request message for the DeleteCategory RPC
+message DeleteCategoryRequest {
+    uint64 id = 1;
+}
+
+// The response message for the DeleteCategory RPC
+message DeleteCategoryResponse {
+   string message = 1;
+}
+
+
 // The CategoryService service definition
 service CategoryService {
     rpc GetCategories(GetCategoriesRequest) returns (GetCategoriesResponse);
+    rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
+    rpc UpdateCategory(UpdateCategoryRequest) returns (UpdateCategoryResponse);
+    rpc DeleteCategory(DeleteCategoryRequest) returns (DeleteCategoryResponse);
 }

@@ -19,3 +19,21 @@ func ToGetCategoriesResponse(categories []*models.Category) *pb.GetCategoriesRes
 		Categories: res,
 	}
 }
+
+func ToCreateCategoryResponse(message string) *pb.CreateCategoryResponse {
+	return &pb.CreateCategoryResponse{
+		Message: message,
+	}
+}
+
+func ToUpdateCategoryResponse(message string) *pb.UpdateCategoryResponse {
+	return &pb.UpdateCategoryResponse{
+		Message: message,
+	}
+}
+
+func ToDeleteCategoryResponse(message string) *pb.DeleteCategoryResponse {
+	return &pb.DeleteCategoryResponse{
+		Message: message,
+	}
+}

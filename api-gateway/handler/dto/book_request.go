@@ -89,24 +89,24 @@ func ToDeleteBookResponse(message string) DeleteBookResponse {
 // @Description A request structure for creating a book
 // @Example {"title": "Book Title", "author_id": 2, "category_id": 3, "isbn": "1234567890", "published_at": "2024-01-01T00:00:00Z", "stock": 10}
 type CreateBookRequest struct {
-	Title       string `json:"title" validate:"required"`
-	AuthorID    uint64 `json:"author_id" validate:"required"`
-	CategoryID  uint64 `json:"category_id" validate:"required"`
-	ISBN        string `json:"isbn" validate:"required"`
-	PublishedAt string `json:"published_at" validate:"required"`
-	Stock       uint64 `json:"stock"`
+	Title       string `json:"title" validate:"required" example:"Book Title"`
+	AuthorID    uint64 `json:"author_id" validate:"required" example:"2"`
+	CategoryID  uint64 `json:"category_id" validate:"required" example:"3"`
+	ISBN        string `json:"isbn" validate:"required" example:"1234567890"`
+	PublishedAt string `json:"published_at" validate:"required" example:"2024-01-01T00:00:00Z"`
+	Stock       uint64 `json:"stock" example:"10"`
 }
 
-// UpdateBookRequest represents the request structure for updateing a book
+// UpdateBookRequest represents the request structure for updating a book
 // @Description A request structure for updating a book
 // @Example {"title": "Book Title", "author_id": 2, "category_id": 3, "isbn": "1234567890", "published_at": "2024-01-01T00:00:00Z", "stock": 10}
 type UpdateBookRequest struct {
-	Title       *string `json:"title"`
-	AuthorID    *uint64 `json:"author_id"`
-	CategoryID  *uint64 `json:"category_id"`
-	ISBN        *string `json:"isbn"`
-	PublishedAt *string `json:"published_at"`
-	Stock       *uint64 `json:"stock"`
+	Title       *string `json:"title" example:"Book Title"`
+	AuthorID    *uint64 `json:"author_id" example:"2"`
+	CategoryID  *uint64 `json:"category_id" example:"3"`
+	ISBN        *string `json:"isbn" example:"1234567890"`
+	PublishedAt *string `json:"published_at" example:"2024-01-01T00:00:00Z"`
+	Stock       *uint64 `json:"stock" example:"10"`
 }
 
 func CreateBookRPCRequest(req *CreateBookRequest) *pbBook.CreateBookRequest {

@@ -114,6 +114,166 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create a new author with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authors"
+                ],
+                "summary": "Create a new author",
+                "parameters": [
+                    {
+                        "description": "Author information",
+                        "name": "author",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAuthorRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateAuthorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/authors/{id}": {
+            "put": {
+                "description": "Update a author with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authors"
+                ],
+                "summary": "Update a author",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Author ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Author information",
+                        "name": "author",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateAuthorRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateAuthorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a author with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authors"
+                ],
+                "summary": "Delete a author",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Author ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteAuthorResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/books": {
@@ -338,7 +498,7 @@
         },
         "/categories": {
             "get": {
-                "description": "Retrieve a paginated list of books from the gRPC service",
+                "description": "Retrieve a paginated list of categories from the gRPC service",
                 "consumes": [
                     "application/json"
                 ],
@@ -348,7 +508,7 @@
                 "tags": [
                     "Categories"
                 ],
-                "summary": "Get a list of books",
+                "summary": "Get a list of categories",
                 "parameters": [
                     {
                         "type": "integer",
@@ -379,6 +539,166 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.GetCategoriesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new category with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Create a new category",
+                "parameters": [
+                    {
+                        "description": "Category information",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCategoryRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{id}": {
+            "put": {
+                "description": "Update a category with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update a category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category information",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCategoryRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateCategoryResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a category with the provided information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete a category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DeleteCategoryResponse"
                         }
                     },
                     "400": {
@@ -534,6 +854,43 @@
                 }
             }
         },
+        "dto.CreateAuthorRequest": {
+            "description": "A request structure for creating an author",
+            "type": "object",
+            "required": [
+                "biography",
+                "birth_date",
+                "first_name",
+                "last_name"
+            ],
+            "properties": {
+                "biography": {
+                    "type": "string",
+                    "example": "An accomplished author."
+                },
+                "birth_date": {
+                    "type": "string",
+                    "example": "1980-01-01"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Doe"
+                }
+            }
+        },
+        "dto.CreateAuthorResponse": {
+            "description": "A success message for author creation",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateBookRequest": {
             "description": "A request structure for creating a book",
             "type": "object",
@@ -546,22 +903,28 @@
             ],
             "properties": {
                 "author_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "category_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 3
                 },
                 "isbn": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "published_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
                 },
                 "stock": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Book Title"
                 }
             }
         },
@@ -574,8 +937,48 @@
                 }
             }
         },
+        "dto.CreateCategoryRequest": {
+            "description": "A request structure for creating a cateogry",
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Category Name"
+                }
+            }
+        },
+        "dto.CreateCategoryResponse": {
+            "description": "A success message for category creation",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DeleteAuthorResponse": {
+            "description": "A success message for author deletion",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.DeleteBookResponse": {
             "description": "A success message for book deletion",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DeleteCategoryResponse": {
+            "description": "A success message for category deletion",
             "type": "object",
             "properties": {
                 "message": {
@@ -637,32 +1040,91 @@
                 }
             }
         },
+        "dto.UpdateAuthorRequest": {
+            "description": "A request structure for updating an author",
+            "type": "object",
+            "properties": {
+                "biography": {
+                    "type": "string",
+                    "example": "An accomplished author."
+                },
+                "birth_date": {
+                    "type": "string",
+                    "example": "1990-01-01"
+                },
+                "first_name": {
+                    "type": "string",
+                    "example": "John Updated"
+                },
+                "last_name": {
+                    "type": "string",
+                    "example": "Doe Update"
+                }
+            }
+        },
+        "dto.UpdateAuthorResponse": {
+            "description": "A success message for author update",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateBookRequest": {
             "description": "A request structure for updating a book",
             "type": "object",
             "properties": {
                 "author_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "category_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 3
                 },
                 "isbn": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1234567890"
                 },
                 "published_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
                 },
                 "stock": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Book Title"
                 }
             }
         },
         "dto.UpdateBookResponse": {
             "description": "A success message for book update",
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateCategoryRequest": {
+            "description": "A request structure for updating a cateogry",
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Category Name Updated"
+                }
+            }
+        },
+        "dto.UpdateCategoryResponse": {
+            "description": "A success message for category update",
             "type": "object",
             "properties": {
                 "message": {

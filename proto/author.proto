@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package author;
 
+import "google/protobuf/struct.proto";
+
 option go_package = "library-management/proto/gen/author;author";
 
 // The Author message contains author information
@@ -23,7 +25,45 @@ message GetAuthorsResponse {
     repeated Author authors = 1;
 }
 
+// The response message for the CreateAuthor RPC
+message CreateAuthorResponse {
+   string message = 1;
+}
+
+// The request message for the CreateAuthor RPC
+message CreateAuthorRequest {
+    string first_name = 1;
+    string last_name = 2;
+    string biography = 3;
+    string birthdate = 4;
+}
+
+// The request message for the UpdateAuthor RPC
+message UpdateAuthorRequest {
+    google.protobuf.Struct data = 1;
+    uint64 id = 2;
+}
+
+// The response message for the UpdateAuthor RPC
+message UpdateAuthorResponse {
+   string message = 1;
+}
+
+// The request message for the DeleteAuthor RPC
+message DeleteAuthorRequest {
+    uint64 id = 1;
+}
+
+// The response message for the DeleteAuthor RPC
+message DeleteAuthorResponse {
+   string message = 1;
+}
+
+
 // The AuthorService service definition
 service AuthorService {
     rpc GetAuthors(GetAuthorsRequest) returns (GetAuthorsResponse);
+    rpc CreateAuthor(CreateAuthorRequest) returns (CreateAuthorResponse);
+    rpc UpdateAuthor(UpdateAuthorRequest) returns (UpdateAuthorResponse);
+    rpc DeleteAuthor(DeleteAuthorRequest) returns (DeleteAuthorResponse);
 }
