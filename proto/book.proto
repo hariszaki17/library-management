@@ -17,10 +17,23 @@ message Book {
     uint64 stock = 7;
 }
 
+// The BookRecommendation message contains book recommendation information
+message BookRecommendation {
+    uint64 id = 1;
+    string title = 2;
+    uint64 author_id = 3;
+    uint64 category_id = 4;
+    string isbn = 5;
+    string published_at = 6;
+    uint64 stock = 7;
+    uint64 borrowed_count = 8;
+}
+
 // The request message for the GetBooks RPC
 message GetBooksRequest {
     uint64 page = 1;
     uint64 limit = 2;
+    string query = 3;
 }
 
 // The response message for the GetBooks RPC
@@ -84,6 +97,15 @@ message ReturnBookByIDResponse {
     string message = 1;
 }
 
+// The request message for the GetBookRecommendation RPC
+message GetBookRecommendationRequest {
+}
+
+// The response message for the GetBookRecommendation RPC
+message GetBookRecommendationResponse {
+    repeated BookRecommendation book_recommendation = 1;
+}
+
 // The BookService service definition
 service BookService {
     rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
@@ -92,4 +114,5 @@ service BookService {
     rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
     rpc BorrowBookByID(BorrowBookByIDRequest) returns (BorrowBookByIDResponse);
     rpc ReturnBookByID(ReturnBookByIDRequest) returns (ReturnBookByIDResponse);
+    rpc GetBookRecommendation(GetBookRecommendationRequest) returns (GetBookRecommendationResponse);
 }

@@ -11,6 +11,12 @@ message User {
     string password = 3;
 }
 
+// The BorrowingCount message contains borrowing count information
+message BorrowingCount {
+    uint64 book_id = 1;
+    uint64 count = 2;
+}
+
 // The request message for the GetUserDetails RPC
 message GetUserDetailsRequest {
     uint64 id = 1;
@@ -64,6 +70,15 @@ message UserReturnBookResponse {
     string message = 1;
 }
 
+// The request message for the GetBorrowingCount RPC
+message GetBorrowingCountRequest {
+}
+
+// The response message for the GetBorrowingCount RPC
+message GetBorrowingCountResponse {
+    repeated BorrowingCount borrowing_count = 1;
+}
+
 
 // The UserService service definition
 service UserService {
@@ -72,4 +87,5 @@ service UserService {
     rpc VerifyJWT(VerifyJWTRequest) returns (VerifyJWTResponse);
     rpc UserBorrowBook(UserBorrowBookRequest) returns (UserBorrowBookResponse);
     rpc UserReturnBook(UserReturnBookRequest) returns (UserReturnBookResponse);
+    rpc GetBorrowingCount(GetBorrowingCountRequest) returns (GetBorrowingCountResponse);
 }

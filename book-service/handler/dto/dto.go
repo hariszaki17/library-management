@@ -54,3 +54,24 @@ func ToReturnBookByIDResponse(message string) *pb.ReturnBookByIDResponse {
 		Message: message,
 	}
 }
+
+func ToGetBookRecommendationResponse(books []*models.BookRecommendation) *pb.GetBookRecommendationResponse {
+	var res []*pb.BookRecommendation
+
+	for _, book := range books {
+		res = append(res, &pb.BookRecommendation{
+			Id:            uint64(book.ID),
+			Title:         book.Title,
+			AuthorId:      uint64(book.AuthorID),
+			CategoryId:    uint64(book.CategoryID),
+			Isbn:          book.ISBN,
+			PublishedAt:   book.PublishedAt.String(),
+			Stock:         uint64(book.Stock),
+			BorrowedCount: uint64(book.BorrowedCount),
+		})
+	}
+
+	return &pb.GetBookRecommendationResponse{
+		BookRecommendation: res,
+	}
+}

@@ -14,6 +14,7 @@ import (
 type BorrowingRecordUsecase interface {
 	BorrowBook(ctx context.Context, userID, bookId uint) error
 	ReturnBook(ctx context.Context, id uint) error
+	GetBorrowingCount(ctx context.Context) ([]*models.BorrowingCount, error)
 }
 
 type borrowingRecordUsecase struct {
@@ -77,4 +78,8 @@ func (u *borrowingRecordUsecase) ReturnBook(ctx context.Context, id uint) error 
 
 	tx.Commit()
 	return nil
+}
+
+func (u *borrowingRecordUsecase) GetBorrowingCount(ctx context.Context) ([]*models.BorrowingCount, error) {
+	return u.borrowingRecordRepo.GetBorrowingCount(ctx)
 }

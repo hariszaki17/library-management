@@ -13,3 +13,8 @@ type BorrowingRecord struct {
 	BorrowedAt time.Time  `json:"borrowed_at"`
 	ReturnedAt *time.Time `json:"returned_at,omitempty"`
 }
+
+type BorrowingCount struct {
+	BookID uint `json:"book_id"`
+	Count  int  `json:"count"`
+}

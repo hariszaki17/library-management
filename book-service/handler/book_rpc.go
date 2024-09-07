@@ -39,7 +39,7 @@ func (r *rpc) GetBooks(ctx context.Context, req *pb.GetBooksRequest) (*pb.GetBoo
 		"userID":      userID,
 	}).Info("Invoke RPC - GetBooks")
 	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
-	books, err := r.bookUsecase.GetBooks(ctx, int(req.Page), int(req.Limit))
+	books, err := r.bookUsecase.GetBooks(ctx, int(req.Page), int(req.Limit), req.Query)
 	if err != nil {
 		logger.WithError(err).Error("Error while calling method bookUsecase.GetBooks")
 		return nil, err
@@ -214,4 +214,29 @@ func (r *rpc) ReturnBookByID(ctx context.Context, req *pb.ReturnBookByIDRequest)
 		"userID":      userID,
 	}).Info("Finished RPC - ReturnBookByID")
 	return dto.ToReturnBookByIDResponse("successfully return a book"), nil
+}
+
+func (r *rpc) GetBookRecommendation(ctx context.Context, req *pb.GetBookRecommendationRequest) (*pb.GetBookRecommendationResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "GetBookRecommendation",
+		"userID":      userID,
+	}).Info("Invoke RPC - GetBookRecommendation")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+	books, err := r.bookUsecase.GetBookRecommendation(ctx)
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method bookUsecase.GetBookRecommendation")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "GetBookRecommendation",
+		"userID":      userID,
+	}).Info("Finished RPC - GetBookRecommendation")
+	return dto.ToGetBookRecommendationResponse(books), nil
 }

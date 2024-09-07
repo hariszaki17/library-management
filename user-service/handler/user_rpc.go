@@ -157,3 +157,29 @@ func (r *rpc) UserReturnBook(ctx context.Context, req *pb.UserReturnBookRequest)
 	}).Info("Finished RPC - UserReturnBook")
 	return dto.ToUserReturnBookResponse("successfully return a book"), nil
 }
+
+func (r *rpc) GetBorrowingCount(ctx context.Context, req *pb.GetBorrowingCountRequest) (*pb.GetBorrowingCountResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "GetBorrowingCount",
+		"userID":      userID,
+	}).Info("Invoke RPC - GetBorrowingCount")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+
+	res, err := r.borrowingRecordUsecase.GetBorrowingCount(ctx)
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method borrowingRecordUsecase.GetBorrowingCount")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "GetBorrowingCount",
+		"userID":      userID,
+	}).Info("Finished RPC - GetBorrowingCount")
+	return dto.ToGetBorrowingCountResponse(res), nil
+}

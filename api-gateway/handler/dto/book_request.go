@@ -28,6 +28,27 @@ type Book struct {
 	Stock       uint   `json:"stock"`
 }
 
+// GetBookRecommendationResponse represents the response structure for getting book recommendation
+// @Description A list of book recommendation
+// @Example {"books": [{"id": 1, "title": "Book Title", "author_id": 2, "category_id": 3, "isbn": "1234567890", "published_at": "2024-01-01T00:00:00Z", "stock": 10}]}
+type GetBookRecommendationResponse struct {
+	BookRecommendations []*BookRecommendation `json:"books"`
+}
+
+// BookRecommendation represents the book information
+// @Description BookRecommendation details
+// @Example {"id": 1, "title": "BookRecommendation Title", "author_id": 2, "category_id": 3, "isbn": "1234567890", "published_at": "2024-01-01T00:00:00Z", "stock": 10, "borrowed_count": 5}
+type BookRecommendation struct {
+	ID            uint   `json:"id"`
+	Title         string `json:"title"`
+	AuthorID      uint   `json:"author_id"`
+	CategoryID    uint   `json:"category_id"`
+	ISBN          string `json:"isbn"`
+	PublishedAt   string `json:"published_at"`
+	Stock         uint   `json:"stock"`
+	BorrowedCount uint   `json:"borrowed_count"`
+}
+
 // CreateBookResponse represents the response structure for creating a book
 // @Description A success message for book creation
 // @Example {"message": "Book created successfully"}
@@ -64,6 +85,25 @@ func ToGetBooksResponse(books []*pbBook.Book) GetBooksResponse {
 	}
 	return GetBooksResponse{
 		Books: res,
+	}
+}
+
+func ToGetBookRecommendationResponse(books []*pbBook.BookRecommendation) GetBookRecommendationResponse {
+	var res []*BookRecommendation
+	for _, book := range books {
+		res = append(res, &BookRecommendation{
+			ID:            uint(book.Id),
+			Title:         book.Title,
+			AuthorID:      uint(book.AuthorId),
+			CategoryID:    uint(book.CategoryId),
+			ISBN:          book.Isbn,
+			PublishedAt:   book.PublishedAt,
+			Stock:         uint(book.Stock),
+			BorrowedCount: uint(book.BorrowedCount),
+		})
+	}
+	return GetBookRecommendationResponse{
+		BookRecommendations: res,
 	}
 }
 

@@ -13,11 +13,12 @@ import (
 )
 
 type BookRepository interface {
-	GetBooks(ctx context.Context, page, limit int) ([]*models.Book, error)
+	GetBooks(ctx context.Context, page, limit int, query string) ([]*models.Book, error)
 	CreateBookWithCtx(tx *gorm.DB, book *models.Book) (*models.Book, error)
 	UpdateBookWithCtx(tx *gorm.DB, existingModel *models.Book, updatedFields map[string]interface{}) (*models.Book, error)
 	DeleteBookWithCtx(tx *gorm.DB, id uint) error
 	GetBookByIDWithCtx(tx *gorm.DB, id uint) (*models.Book, error)
+	GetBookByIds(ctx context.Context, ids []uint) ([]*models.Book, error)
 	Begin(ctx context.Context) *gorm.DB
 	Commit(tx *gorm.DB) *gorm.DB
 	Rollback(tx *gorm.DB) *gorm.DB
@@ -32,8 +33,8 @@ func NewBookRepository(db *gorm.DB, cache *cache.Cache) BookRepository {
 	return &bookRepository{db: db, cache: cache}
 }
 
-func (r *bookRepository) GetBooks(ctx context.Context, page, limit int) ([]*models.Book, error) {
-	cacheKey := fmt.Sprintf("GetBooks, page:%d, limit:%d", page, limit)
+func (r *bookRepository) GetBooks(ctx context.Context, page, limit int, query string) ([]*models.Book, error) {
+	cacheKey := fmt.Sprintf("GetBooks,page:%d,limit:%d,query:%s", page, limit, query)
 	cachedBook, err := r.cache.Get(cacheKey)
 	if err == nil && cachedBook != "" {
 		// Deserialize cachedBook and return
@@ -49,7 +50,8 @@ func (r *bookRepository) GetBooks(ctx context.Context, page, limit int) ([]*mode
 	offset := (page - 1) * limit
 
 	var books []*models.Book
-	if err := r.db.WithContext(ctx).Limit(limit).Offset(offset).Find(&books).Error; err != nil {
+	query = "%" + query + "%"
+	if err := r.db.WithContext(ctx).Where("title ILIKE ?", query).Limit(limit).Offset(offset).Find(&books).Error; err != nil {
 		return nil, err
 	}
 
@@ -96,6 +98,36 @@ func (r *bookRepository) GetBookByIDWithCtx(tx *gorm.DB, id uint) (*models.Book,
 	}
 
 	return book, nil
+}
+
+func (r *bookRepository) GetBookByIds(ctx context.Context, ids []uint) ([]*models.Book, error) {
+	cacheKey := fmt.Sprintf("GetBookByIds,ids:%v", ids)
+	cachedBook, err := r.cache.Get(cacheKey)
+	if err == nil && cachedBook != "" {
+		// Deserialize cachedBook and return
+		books := []*models.Book{}
+		err := json.Unmarshal([]byte(cachedBook), &books)
+		if err != nil {
+			return nil, err
+		}
+		return books, nil
+	}
+
+	var books []*models.Book
+	if err := r.db.WithContext(ctx).Where("id in (?)", ids).Find(&books).Error; err != nil {
+		return nil, err
+	}
+
+	// Cache the result
+	serializedBooks, err := json.Marshal(books)
+	if err != nil {
+		return nil, err
+	}
+	err = r.cache.Set(cacheKey, string(serializedBooks), time.Minute)
+	if err != nil {
+		log.Printf("Failed to set cache: %v", err)
+	}
+	return books, nil
 }
 
 func (r *bookRepository) Commit(tx *gorm.DB) *gorm.DB {

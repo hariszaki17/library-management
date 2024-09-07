@@ -6,15 +6,17 @@ import (
 	"log"
 	"net"
 
-	"github.com/hariszaki17/library-management/proto/cache"
 	"github.com/hariszaki17/library-management/book-service/config"
 	"github.com/hariszaki17/library-management/book-service/models"
 	"github.com/hariszaki17/library-management/book-service/repository"
 	"github.com/hariszaki17/library-management/book-service/usecase"
+	"github.com/hariszaki17/library-management/proto/cache"
+	"github.com/hariszaki17/library-management/proto/grpcclient"
 
 	"github.com/hariszaki17/library-management/book-service/handler"
 
 	pb "github.com/hariszaki17/library-management/proto/gen/book/proto"
+	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto"
 
 	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
@@ -42,11 +44,19 @@ func main() {
 	// Migrate the schema
 	db.AutoMigrate(&models.Book{})
 
+	userConnRPC, err := grpcclient.NewGrpcConn(config.Data.UserRPCAddress)
+	if err != nil {
+		log.Fatalf("Failed to connect to book gRPC server: %v", err)
+	}
+	defer userConnRPC.Close()
+
+	userRPC := pbUser.NewUserServiceClient(userConnRPC)
+
 	// Instantiate Repository
 	bookRepo := repository.NewBookRepository(db, redisCache)
 
 	// Instantiate Usecase
-	bookUsecase := usecase.NewBookUsecase(bookRepo)
+	bookUsecase := usecase.NewBookUsecase(bookRepo, &userRPC)
 
 	// Instantiate Handlers
 	grpcHandler := handler.NewRPC(bookUsecase)

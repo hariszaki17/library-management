@@ -15,3 +15,8 @@ type Book struct {
 	PublishedAt time.Time `json:"published_at"`
 	Stock       uint      `json:"stock"`
 }
+
+type BookRecommendation struct {
+	*Book
+	BorrowedCount uint `json:"borrowed_count"`
+}

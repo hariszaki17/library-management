@@ -32,6 +32,8 @@ func NewBookHandler(g *echo.Group, bookRPC pb.BookServiceClient, authMiddleware 
 	g.POST("", handler.CreateBook, authMiddleware)
 	g.PUT("/:id", handler.UpdateBook, authMiddleware)
 	g.DELETE("/:id", handler.DeleteBook, authMiddleware)
+	g.GET("/recommendation", handler.GetBookRecommendation, authMiddleware)
+
 }
 
 // GetBooks godoc
@@ -42,6 +44,7 @@ func NewBookHandler(g *echo.Group, bookRPC pb.BookServiceClient, authMiddleware 
 // @Produce json
 // @Param page query int true "Page number" default(1)
 // @Param limit query int true "Number of items per page" default(10)
+// @Param query query string false "Query search of title"
 // @Param Authorization header string true "Bearer token" Example: Bearer xxx"
 // @Success 200 {object} dto.GetBooksResponse
 // @Failure 400 {object} dto.ErrorResponse
@@ -50,6 +53,7 @@ func NewBookHandler(g *echo.Group, bookRPC pb.BookServiceClient, authMiddleware 
 func (h *BookHandler) GetBooks(c echo.Context) error {
 	pageStr := c.QueryParam("page")
 	limitStr := c.QueryParam("limit")
+	query := c.QueryParam("query")
 
 	requestID := middleware.GetRequestID(c)
 	userID := middleware.GetUserID(c)
@@ -84,7 +88,7 @@ func (h *BookHandler) GetBooks(c echo.Context) error {
 		constants.UserIDKeyCtx, userID)
 	grpcCtx := metadata.NewOutgoingContext(c.Request().Context(), md)
 
-	req := &pb.GetBooksRequest{Page: uint64(page), Limit: uint64(limit)}
+	req := &pb.GetBooksRequest{Page: uint64(page), Limit: uint64(limit), Query: query}
 	resp, err := h.bookRPC.GetBooks(grpcCtx, req)
 	if err != nil {
 		logger.WithError(err).Error("Failed to get books from gRPC server")
@@ -276,4 +280,47 @@ func (h *BookHandler) DeleteBook(c echo.Context) error {
 		"requestID":   requestID,
 	}).Info("Book deleted successfully")
 	return c.JSON(http.StatusOK, dto.ToDeleteBookResponse("Book deleted successfully"))
+}
+
+// GetBookRecommendation godoc
+// @Summary Get a list of book recommendation
+// @Description Retrieve a list of book recommendation from the gRPC service
+// @Tags Books
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "Bearer token" Example: Bearer xxx"
+// @Success 200 {object} dto.GetBookRecommendationResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /books/recommendation [get]
+func (h *BookHandler) GetBookRecommendation(c echo.Context) error {
+	requestID := middleware.GetRequestID(c)
+	userID := middleware.GetUserID(c)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "GetBookRecommendation",
+		"userID":      userID,
+	}).Info("Fetching book recommendation")
+
+	// Create gRPC context with metadata
+	md := metadata.Pairs(
+		constants.RequestIDKeyCtx, requestID,
+		constants.UserIDKeyCtx, userID)
+	grpcCtx := metadata.NewOutgoingContext(c.Request().Context(), md)
+
+	resp, err := h.bookRPC.GetBookRecommendation(grpcCtx, &pb.GetBookRecommendationRequest{})
+	if err != nil {
+		logger.WithError(err).Error("Failed to get book recommendation from gRPC server")
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: "Internal server error"})
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"handler":     "GetBookRecommendation",
+		"userID":      userID,
+	}).Info("Successfully fetched book book recommendation")
+
+	return c.JSON(http.StatusOK, dto.ToGetBookRecommendationResponse(resp.BookRecommendation))
 }

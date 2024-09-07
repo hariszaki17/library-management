@@ -14,6 +14,7 @@ type Config struct {
 	RedistPort  string `env:"REDIS_PORT" env-default:"6379"`
 	RedistHost  string `env:"REDIS_HOST" env-default:"redis"`
 	ServiceName string `env:"SERVICE_NAME" env-default:"book-service"`
+	UserRPCAddress     string `env:"USER_RPC_ADDRESS" env-default:"user-service:50051"`
 }
 
 var (

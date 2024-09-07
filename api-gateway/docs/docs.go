@@ -319,6 +319,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "Query search of title",
+                        "name": "query",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "Bearer token",
                         "name": "Authorization",
                         "in": "header",
@@ -381,6 +387,50 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.CreateBookResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/books/recommendation": {
+            "get": {
+                "description": "Retrieve a list of book recommendation from the gRPC service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get a list of book recommendation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetBookRecommendationResponse"
                         }
                     },
                     "400": {
@@ -959,6 +1009,36 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.BookRecommendation": {
+            "description": "BookRecommendation details",
+            "type": "object",
+            "properties": {
+                "author_id": {
+                    "type": "integer"
+                },
+                "borrowed_count": {
+                    "type": "integer"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isbn": {
+                    "type": "string"
+                },
+                "published_at": {
+                    "type": "string"
+                },
+                "stock": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.Category": {
             "description": "Category details",
             "type": "object",
@@ -1120,6 +1200,18 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/dto.Author"
+                    }
+                }
+            }
+        },
+        "dto.GetBookRecommendationResponse": {
+            "description": "A list of book recommendation",
+            "type": "object",
+            "properties": {
+                "books": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.BookRecommendation"
                     }
                 }
             }

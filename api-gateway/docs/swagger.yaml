@@ -48,6 +48,26 @@ definitions:
       title:
         type: string
     type: object
+  dto.BookRecommendation:
+    description: BookRecommendation details
+    properties:
+      author_id:
+        type: integer
+      borrowed_count:
+        type: integer
+      category_id:
+        type: integer
+      id:
+        type: integer
+      isbn:
+        type: string
+      published_at:
+        type: string
+      stock:
+        type: integer
+      title:
+        type: string
+    type: object
   dto.Category:
     description: Category details
     properties:
@@ -162,6 +182,14 @@ definitions:
       authors:
         items:
           $ref: '#/definitions/dto.Author'
+        type: array
+    type: object
+  dto.GetBookRecommendationResponse:
+    description: A list of book recommendation
+    properties:
+      books:
+        items:
+          $ref: '#/definitions/dto.BookRecommendation'
         type: array
     type: object
   dto.GetBooksResponse:
@@ -484,6 +512,10 @@ paths:
         name: limit
         required: true
         type: integer
+      - description: Query search of title
+        in: query
+        name: query
+        type: string
       - description: Bearer token
         in: header
         name: Authorization
@@ -612,6 +644,35 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Update a book
+      tags:
+      - Books
+  /books/recommendation:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of book recommendation from the gRPC service
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetBookRecommendationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a list of book recommendation
       tags:
       - Books
   /borrow-book:

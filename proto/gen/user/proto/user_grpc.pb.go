@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_GetUserDetails_FullMethodName = "/user.UserService/GetUserDetails"
-	UserService_Authenticate_FullMethodName   = "/user.UserService/Authenticate"
-	UserService_VerifyJWT_FullMethodName      = "/user.UserService/VerifyJWT"
-	UserService_UserBorrowBook_FullMethodName = "/user.UserService/UserBorrowBook"
-	UserService_UserReturnBook_FullMethodName = "/user.UserService/UserReturnBook"
+	UserService_GetUserDetails_FullMethodName    = "/user.UserService/GetUserDetails"
+	UserService_Authenticate_FullMethodName      = "/user.UserService/Authenticate"
+	UserService_VerifyJWT_FullMethodName         = "/user.UserService/VerifyJWT"
+	UserService_UserBorrowBook_FullMethodName    = "/user.UserService/UserBorrowBook"
+	UserService_UserReturnBook_FullMethodName    = "/user.UserService/UserReturnBook"
+	UserService_GetBorrowingCount_FullMethodName = "/user.UserService/GetBorrowingCount"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -37,6 +38,7 @@ type UserServiceClient interface {
 	VerifyJWT(ctx context.Context, in *VerifyJWTRequest, opts ...grpc.CallOption) (*VerifyJWTResponse, error)
 	UserBorrowBook(ctx context.Context, in *UserBorrowBookRequest, opts ...grpc.CallOption) (*UserBorrowBookResponse, error)
 	UserReturnBook(ctx context.Context, in *UserReturnBookRequest, opts ...grpc.CallOption) (*UserReturnBookResponse, error)
+	GetBorrowingCount(ctx context.Context, in *GetBorrowingCountRequest, opts ...grpc.CallOption) (*GetBorrowingCountResponse, error)
 }
 
 type userServiceClient struct {
@@ -97,6 +99,16 @@ func (c *userServiceClient) UserReturnBook(ctx context.Context, in *UserReturnBo
 	return out, nil
 }
 
+func (c *userServiceClient) GetBorrowingCount(ctx context.Context, in *GetBorrowingCountRequest, opts ...grpc.CallOption) (*GetBorrowingCountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetBorrowingCountResponse)
+	err := c.cc.Invoke(ctx, UserService_GetBorrowingCount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -108,6 +120,7 @@ type UserServiceServer interface {
 	VerifyJWT(context.Context, *VerifyJWTRequest) (*VerifyJWTResponse, error)
 	UserBorrowBook(context.Context, *UserBorrowBookRequest) (*UserBorrowBookResponse, error)
 	UserReturnBook(context.Context, *UserReturnBookRequest) (*UserReturnBookResponse, error)
+	GetBorrowingCount(context.Context, *GetBorrowingCountRequest) (*GetBorrowingCountResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -132,6 +145,9 @@ func (UnimplementedUserServiceServer) UserBorrowBook(context.Context, *UserBorro
 }
 func (UnimplementedUserServiceServer) UserReturnBook(context.Context, *UserReturnBookRequest) (*UserReturnBookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserReturnBook not implemented")
+}
+func (UnimplementedUserServiceServer) GetBorrowingCount(context.Context, *GetBorrowingCountRequest) (*GetBorrowingCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBorrowingCount not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -244,6 +260,24 @@ func _UserService_UserReturnBook_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetBorrowingCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBorrowingCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetBorrowingCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetBorrowingCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetBorrowingCount(ctx, req.(*GetBorrowingCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -270,6 +304,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserReturnBook",
 			Handler:    _UserService_UserReturnBook_Handler,
+		},
+		{
+			MethodName: "GetBorrowingCount",
+			Handler:    _UserService_GetBorrowingCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

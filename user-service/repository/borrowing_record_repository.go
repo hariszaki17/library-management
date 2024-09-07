@@ -12,6 +12,7 @@ type BorrowingRecordRepository interface {
 	CreateBorrowingRecordWithCtx(tx *gorm.DB, borrowingRecord *models.BorrowingRecord) (*models.BorrowingRecord, error)
 	UpdateBorrowingRecordWithCtx(tx *gorm.DB, existingModel *models.BorrowingRecord, updatedFields map[string]interface{}) (*models.BorrowingRecord, error)
 	GetBorrowingRecordByIDWithCtx(tx *gorm.DB, id uint) (*models.BorrowingRecord, error)
+	GetBorrowingCount(ctx context.Context) ([]*models.BorrowingCount, error)
 	Begin(ctx context.Context) *gorm.DB
 	Commit(tx *gorm.DB) *gorm.DB
 	Rollback(tx *gorm.DB) *gorm.DB
@@ -49,6 +50,23 @@ func (r *borrowingRecordRepository) GetBorrowingRecordByIDWithCtx(tx *gorm.DB, i
 	}
 
 	return borrowingRecord, nil
+}
+
+func (r *borrowingRecordRepository) GetBorrowingCount(ctx context.Context) ([]*models.BorrowingCount, error) {
+	var result []*models.BorrowingCount
+
+	err := r.db.WithContext(ctx).Model(&models.BorrowingRecord{}).
+		Select("book_id, count(book_id) as count").
+		Group("book_id").
+		Order("count(book_id) desc").
+		Limit(3).
+		Scan(&result).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
 
 func (r *borrowingRecordRepository) Commit(tx *gorm.DB) *gorm.DB {

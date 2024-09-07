@@ -20,8 +20,10 @@ services:
       context: .
       dockerfile: Dockerfile.user-service
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
     ports:
       - "50051:50051"
@@ -33,8 +35,10 @@ services:
       context: .
       dockerfile: Dockerfile.book-service
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
     networks:
       - internal-network
@@ -44,8 +48,10 @@ services:
       context: .
       dockerfile: Dockerfile.author-service
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
     networks:
       - internal-network
@@ -55,8 +61,10 @@ services:
       context: .
       dockerfile: Dockerfile.category-service
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: on-failure
     networks:
       - internal-network
@@ -71,6 +79,11 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - internal-network
 
@@ -78,6 +91,12 @@ services:
     image: redis:6
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      timeout: 5s
     networks:
       - internal-network
 
