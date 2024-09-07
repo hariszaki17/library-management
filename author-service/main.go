@@ -6,11 +6,11 @@ import (
 	"log"
 	"net"
 
-	"github.com/hariszaki17/library-management/proto/cache"
 	"github.com/hariszaki17/library-management/author-service/config"
 	"github.com/hariszaki17/library-management/author-service/models"
 	"github.com/hariszaki17/library-management/author-service/repository"
 	"github.com/hariszaki17/library-management/author-service/usecase"
+	"github.com/hariszaki17/library-management/proto/cache"
 
 	"github.com/hariszaki17/library-management/author-service/handler"
 
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// Initialize Redis cache
-	redisCache := cache.NewCache(fmt.Sprintf("%s:%s", config.Data.RedistHost, config.Data.RedistPort))
+	redisCache := cache.NewCache(fmt.Sprintf("%s:%s", config.Data.RedistHost, config.Data.RedisPort))
 
 	// Migrate the schema
 	db.AutoMigrate(&models.Author{})

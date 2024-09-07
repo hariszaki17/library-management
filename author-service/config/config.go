@@ -11,7 +11,7 @@ type Config struct {
 	DBName      string `env:"DB_NAME" env-default:"postgres"`
 	DBPort      string `env:"DB_PORT" env-default:"5432"`
 	GRPCPort    string `env:"GRPC_PORT" env-default:"50051"`
-	RedistPort  string `env:"REDIS_PORT" env-default:"6379"`
+	RedisPort   string `env:"REDIS_PORT" env-default:"6379"`
 	RedistHost  string `env:"REDIS_HOST" env-default:"redis"`
 	ServiceName string `env:"SERVICE_NAME" env-default:"author-service"`
 }

@@ -1,0 +1,59 @@
+@startuml
+!define RECTANGLE class
+
+RECTANGLE "API Gateway" as APIGW {
+  .. HTTP Requests ..
+  .. gRPC Requests ..
+}
+
+RECTANGLE "User Service" as US {
+  .. gRPC Requests ..
+  .. PostgreSQL ..
+  .. Redis Cache ..
+}
+
+RECTANGLE "Author Service" as AS {
+  .. gRPC Requests ..
+  .. PostgreSQL ..
+  .. Redis Cache ..
+}
+
+RECTANGLE "Book Service" as BS {
+  .. gRPC Requests ..
+  .. PostgreSQL ..
+  .. Redis Cache ..
+}
+
+RECTANGLE "Category Service" as CS {
+  .. gRPC Requests ..
+  .. PostgreSQL ..
+  .. Redis Cache ..
+}
+
+RECTANGLE "PostgreSQL Database" as DB {
+  .. Central Database ..
+}
+
+RECTANGLE "Redis Cache" as CACHE {
+  .. Caching Layer ..
+}
+
+APIGW -down-> US : "gRPC"
+APIGW -down-> AS : "gRPC"
+APIGW -down-> BS : "gRPC"
+APIGW -down-> CS : "gRPC"
+
+US -down-> BS : "gRPC"
+BS -down-> US : "gRPC"
+
+US -right-> DB : "PostgreSQL"
+AS -right-> DB : "PostgreSQL"
+BS -right-> DB : "PostgreSQL"
+CS -right-> DB : "PostgreSQL"
+
+US -left-> CACHE : "Redis"
+AS -left-> CACHE : "Redis"
+BS -left-> CACHE : "Redis"
+CS -left-> CACHE : "Redis"
+
+@enduml

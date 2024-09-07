@@ -1,0 +1,44 @@
+@startuml
+entity "Book" {
+  +ID : bigint <<PK>>
+  +Title : string
+  +AuthorID : uint
+  +CategoryID : uint
+  +ISBN : string <<unique>>
+  +PublishedAt : datetime
+  +Stock : uint
+}
+
+entity "Author" {
+  +ID : bigint <<PK>>
+  +FirstName : string
+  +LastName : string
+  +Biography : string
+  +BirthDate : datetime
+}
+
+entity "User" {
+  +ID : bigint <<PK>>
+  +Username : string
+  +Password : string
+}
+
+entity "Category" {
+  +ID : bigint <<PK>>
+  +Name : string
+}
+
+entity "BorrowingRecord" {
+  +ID : bigint <<PK>>
+  +UserID : uint
+  +BookID : uint
+  +BorrowedAt : datetime
+  +ReturnedAt : datetime
+}
+
+"Author" --o "Book" : "writes"
+"Category" --o "Book" : "includes"
+"User" --o "BorrowingRecord" : "creates"
+"Book" --o "BorrowingRecord" : "includes"
+
+@enduml

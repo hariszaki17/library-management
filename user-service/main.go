@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// Initialize Redis cache
-	redisCache := cache.NewCache(fmt.Sprintf("%s:%s", config.Data.RedistHost, config.Data.RedistPort))
+	redisCache := cache.NewCache(fmt.Sprintf("%s:%s", config.Data.RedistHost, config.Data.RedisPort))
 
 	// Migrate the schema
 	db.AutoMigrate(&models.User{})
