@@ -28,7 +28,7 @@ jobs:
           context: .
           file: Dockerfile.api-gateway
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/libary-management:api-gateway-latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/library-management:api-gateway-latest
 
       - name: Build and push User Service image
         uses: docker/build-push-action@v2
@@ -36,7 +36,7 @@ jobs:
           context: .
           file: Dockerfile.user-service
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/libary-management:user-service-latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/library-management:user-service-latest
 
       - name: Build and push Book Service image
         uses: docker/build-push-action@v2
@@ -44,7 +44,7 @@ jobs:
           context: .
           file: Dockerfile.book-service
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/libary-management:book-service-latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/library-management:book-service-latest
 
       - name: Build and push Author Service image
         uses: docker/build-push-action@v2
@@ -62,17 +62,17 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/library-management:category-service-latest
 
-  # deploy:
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to VPS
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.VPS_HOST }}
-  #         username: ${{ secrets.VPS_USER }}
-  #         key: ${{ secrets.VPS_SSH_KEY }}
-  #         script: |
-  #           cd /path/to/your/deployment/folder
-  #           docker-compose pull
-  #           docker-compose up -d --build
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd library-management
+            docker-compose pull
+            docker-compose up -d --build
