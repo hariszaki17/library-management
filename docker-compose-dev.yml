@@ -1,7 +1,9 @@
 version: '3'
 services:
   api-gateway:
-    image: hariszaki17/library-management:api-gateway-latest
+    build:
+      context: .
+      dockerfile: Dockerfile.api-gateway
     ports:
       - "8080:8080"
     depends_on:
@@ -13,22 +15,23 @@ services:
     networks:
       - internal-network
       - external-network
-
   user-service:
-    image: hariszaki17/library-management:user-service-latest
+    build:
+      context: .
+      dockerfile: Dockerfile.user-service
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     restart: on-failure
-    ports:
-      - "50051:50051"
     networks:
       - internal-network
 
   book-service:
-    image: hariszaki17/library-management:book-service-latest
+    build:
+      context: .
+      dockerfile: Dockerfile.book-service
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,7 +42,9 @@ services:
       - internal-network
 
   author-service:
-    image: hariszaki17/library-management:author-service-latest
+    build:
+      context: .
+      dockerfile: Dockerfile.author-service
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,7 +55,9 @@ services:
       - internal-network
 
   category-service:
-    image: hariszaki17/library-management:category-service-latest
+    build:
+      context: .
+      dockerfile: Dockerfile.category-service
     depends_on:
       postgres:
         condition: service_healthy
