@@ -6,7 +6,8 @@ import (
 	"log"
 	"net"
 
-	"github.com/hariszaki17/library-management/user-service/cache"
+	"github.com/hariszaki17/library-management/proto/cache"
+	"github.com/hariszaki17/library-management/proto/grpcclient"
 	"github.com/hariszaki17/library-management/user-service/config"
 	"github.com/hariszaki17/library-management/user-service/models"
 	"github.com/hariszaki17/library-management/user-service/repository"
@@ -14,7 +15,8 @@ import (
 
 	"github.com/hariszaki17/library-management/user-service/handler"
 
-	pb "github.com/hariszaki17/library-management/proto/gen/user/proto" // Replace with your proto package
+	pbBook "github.com/hariszaki17/library-management/proto/gen/book/proto" // Replace with your proto package
+	pb "github.com/hariszaki17/library-management/proto/gen/user/proto"     // Replace with your proto package
 
 	"google.golang.org/grpc"
 	"gorm.io/driver/postgres"
@@ -41,16 +43,26 @@ func main() {
 
 	// Migrate the schema
 	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.BorrowingRecord{})
+
+	bookConnRPC, err := grpcclient.NewGrpcConn(config.Data.BookRPCAddress)
+	if err != nil {
+		log.Fatalf("Failed to connect to book gRPC server: %v", err)
+	}
+	defer bookConnRPC.Close()
+
+	bookRPC := pbBook.NewBookServiceClient(bookConnRPC)
 
 	// Instantiate Repository
 	userRepo := repository.NewUserRepository(db, redisCache)
+	borrowingRecordRepo := repository.NewBorrowingRecordRepository(db, redisCache)
 
 	// Instantiate Usecase
 	userUsecase := usecase.NewUserUsecase(userRepo)
+	borrowingRecordUsecase := usecase.NewBorrowingRecordUsecase(borrowingRecordRepo, &bookRPC)
 
 	// Instantiate Handlers
-	grpcHandler := handler.NewRPC(userUsecase)
-	// httpHandler := handler.NewHttpHandler(userUsecase)
+	grpcHandler := handler.NewRPC(userUsecase, borrowingRecordUsecase)
 
 	// Start gRPC server
 	grpcServer := grpc.NewServer()

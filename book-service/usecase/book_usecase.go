@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hariszaki17/library-management/book-service/models"
 	"github.com/hariszaki17/library-management/book-service/repository"
@@ -13,6 +14,8 @@ type BookUsecase interface {
 	CreateBook(ctx context.Context, book *models.Book) (*models.Book, error)
 	UpdateBook(ctx context.Context, id uint, updateValues map[string]any) (*models.Book, error)
 	DeleteBook(ctx context.Context, id uint) error
+	BorrowBookByID(ctx context.Context, id uint) error
+	ReturnBookByID(ctx context.Context, id uint) error
 }
 
 type bookUsecase struct {
@@ -59,6 +62,55 @@ func (u *bookUsecase) UpdateBook(ctx context.Context, id uint, updatedValues map
 func (u *bookUsecase) DeleteBook(ctx context.Context, id uint) error {
 	tx := u.bookRepo.Begin(ctx)
 	err := u.bookRepo.DeleteBookWithCtx(tx, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
+}
+
+func (u *bookUsecase) BorrowBookByID(ctx context.Context, id uint) error {
+	tx := u.bookRepo.Begin(ctx)
+
+	book, err := u.bookRepo.GetBookByIDWithCtx(tx, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if book.Stock < 1 {
+		tx.Rollback()
+		return errors.New("book out of stock")
+	}
+
+	updatedStock := book.Stock - 1
+	_, err = u.bookRepo.UpdateBookWithCtx(tx, book, map[string]interface{}{
+		"stock": updatedStock,
+	})
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
+}
+
+func (u *bookUsecase) ReturnBookByID(ctx context.Context, id uint) error {
+	tx := u.bookRepo.Begin(ctx)
+
+	book, err := u.bookRepo.GetBookByIDWithCtx(tx, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	updatedStock := book.Stock + 1
+	_, err = u.bookRepo.UpdateBookWithCtx(tx, book, map[string]interface{}{
+		"stock": updatedStock,
+	})
 	if err != nil {
 		tx.Rollback()
 		return err

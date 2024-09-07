@@ -154,3 +154,64 @@ func (r *rpc) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*pb.De
 	return dto.ToDeleteBookResponse("successfully delete a book"), nil
 }
 
+func (r *rpc) BorrowBookByID(ctx context.Context, req *pb.BorrowBookByIDRequest) (*pb.BorrowBookByIDResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "BorrowBookByID",
+		"userID":      userID,
+	}).Info("Invoke RPC - BorrowBookByID")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+
+	if req.Id < 1 {
+		logger.Error("Error while calling method bookUsecase.BorrowBookByID, id must be > 0")
+		return nil, errors.New("id must be > 0")
+	}
+
+	err := r.bookUsecase.BorrowBookByID(ctx, uint(req.Id))
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method bookUsecase.BorrowBookByID")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "BorrowBookByID",
+		"userID":      userID,
+	}).Info("Finished RPC - BorrowBookByID")
+	return dto.ToBorrowBookByIDResponse("successfully borrow a book"), nil
+}
+
+func (r *rpc) ReturnBookByID(ctx context.Context, req *pb.ReturnBookByIDRequest) (*pb.ReturnBookByIDResponse, error) {
+	requestID := utils.ExtractRequestID(ctx)
+	userID := utils.ExtractUserID(ctx)
+	logger := logging.Logger.WithField("requestID", requestID)
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "ReturnBookByID",
+		"userID":      userID,
+	}).Info("Invoke RPC - ReturnBookByID")
+	ctx = context.WithValue(ctx, constants.RequestIDKeyCtx, requestID)
+
+	if req.Id < 1 {
+		logger.Error("Error while calling method bookUsecase.ReturnBookByID, id must be > 0")
+		return nil, errors.New("id must be > 0")
+	}
+
+	err := r.bookUsecase.ReturnBookByID(ctx, uint(req.Id))
+	if err != nil {
+		logger.WithError(err).Error("Error while calling method bookUsecase.ReturnBookByID")
+		return nil, err
+	}
+
+	logger.WithFields(logrus.Fields{
+		"serviceName": config.Data.ServiceName,
+		"rpc":         "ReturnBookByID",
+		"userID":      userID,
+	}).Info("Finished RPC - ReturnBookByID")
+	return dto.ToReturnBookByIDResponse("successfully return a book"), nil
+}

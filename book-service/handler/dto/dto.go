@@ -42,3 +42,15 @@ func ToDeleteBookResponse(message string) *pb.DeleteBookResponse {
 		Message: message,
 	}
 }
+
+func ToBorrowBookByIDResponse(message string) *pb.BorrowBookByIDResponse {
+	return &pb.BorrowBookByIDResponse{
+		Message: message,
+	}
+}
+
+func ToReturnBookByIDResponse(message string) *pb.ReturnBookByIDResponse {
+	return &pb.ReturnBookByIDResponse{
+		Message: message,
+	}
+}

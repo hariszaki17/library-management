@@ -64,10 +64,32 @@ message DeleteBookResponse {
    string message = 1;
 }
 
+// The request message for the BorrowBookByID RPC
+message BorrowBookByIDRequest {
+    uint64 id = 1;
+}
+
+// The response message for the BorrowBookByID RPC
+message BorrowBookByIDResponse {
+    string message = 1;
+}
+
+// The request message for the ReturnBookByID RPC
+message ReturnBookByIDRequest {
+    uint64 id = 1;
+}
+
+// The response message for the ReturnBookByID RPC
+message ReturnBookByIDResponse {
+    string message = 1;
+}
+
 // The BookService service definition
 service BookService {
     rpc GetBooks(GetBooksRequest) returns (GetBooksResponse);
     rpc CreateBook(CreateBookRequest) returns (CreateBookResponse);
     rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse);
     rpc DeleteBook(DeleteBookRequest) returns (DeleteBookResponse);
+    rpc BorrowBookByID(BorrowBookByIDRequest) returns (BorrowBookByIDResponse);
+    rpc ReturnBookByID(ReturnBookByIDRequest) returns (ReturnBookByIDResponse);
 }

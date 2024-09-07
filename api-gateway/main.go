@@ -6,9 +6,9 @@ import (
 
 	"github.com/hariszaki17/library-management/api-gateway/config"
 	_ "github.com/hariszaki17/library-management/api-gateway/docs" // Import the generated docs package
-	"github.com/hariszaki17/library-management/api-gateway/grpcclient"
 	"github.com/hariszaki17/library-management/api-gateway/handler"
 	"github.com/hariszaki17/library-management/api-gateway/handler/middleware"
+	"github.com/hariszaki17/library-management/proto/grpcclient"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
@@ -76,6 +76,7 @@ func main() {
 	bookGroup := e.Group("/books")
 	authorGroup := e.Group("/authors")
 	categoryGroup := e.Group("/categories")
+	borrowingRecordGroup := e.Group("/borrow-book")
 
 	// Inject gRPC client into the handlers
 	handler.NewAuthHandler(authGroup, userRPC)
@@ -83,6 +84,7 @@ func main() {
 	handler.NewBookHandler(bookGroup, bookRPC, authMiddleware)
 	handler.NewAuthorHandler(authorGroup, authorRPC, authMiddleware)
 	handler.NewCategoryHandler(categoryGroup, categoryRPC, authMiddleware)
+	handler.NewBorrowingRecordHandler(borrowingRecordGroup, userRPC, authMiddleware)
 
 	// Start HTTP server
 	fmt.Println("HTTP server is running on port 8080")

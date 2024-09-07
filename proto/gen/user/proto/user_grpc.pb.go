@@ -22,6 +22,8 @@ const (
 	UserService_GetUserDetails_FullMethodName = "/user.UserService/GetUserDetails"
 	UserService_Authenticate_FullMethodName   = "/user.UserService/Authenticate"
 	UserService_VerifyJWT_FullMethodName      = "/user.UserService/VerifyJWT"
+	UserService_UserBorrowBook_FullMethodName = "/user.UserService/UserBorrowBook"
+	UserService_UserReturnBook_FullMethodName = "/user.UserService/UserReturnBook"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -33,6 +35,8 @@ type UserServiceClient interface {
 	GetUserDetails(ctx context.Context, in *GetUserDetailsRequest, opts ...grpc.CallOption) (*GetUserDetailsResponse, error)
 	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
 	VerifyJWT(ctx context.Context, in *VerifyJWTRequest, opts ...grpc.CallOption) (*VerifyJWTResponse, error)
+	UserBorrowBook(ctx context.Context, in *UserBorrowBookRequest, opts ...grpc.CallOption) (*UserBorrowBookResponse, error)
+	UserReturnBook(ctx context.Context, in *UserReturnBookRequest, opts ...grpc.CallOption) (*UserReturnBookResponse, error)
 }
 
 type userServiceClient struct {
@@ -73,6 +77,26 @@ func (c *userServiceClient) VerifyJWT(ctx context.Context, in *VerifyJWTRequest,
 	return out, nil
 }
 
+func (c *userServiceClient) UserBorrowBook(ctx context.Context, in *UserBorrowBookRequest, opts ...grpc.CallOption) (*UserBorrowBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserBorrowBookResponse)
+	err := c.cc.Invoke(ctx, UserService_UserBorrowBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UserReturnBook(ctx context.Context, in *UserReturnBookRequest, opts ...grpc.CallOption) (*UserReturnBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserReturnBookResponse)
+	err := c.cc.Invoke(ctx, UserService_UserReturnBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -82,6 +106,8 @@ type UserServiceServer interface {
 	GetUserDetails(context.Context, *GetUserDetailsRequest) (*GetUserDetailsResponse, error)
 	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
 	VerifyJWT(context.Context, *VerifyJWTRequest) (*VerifyJWTResponse, error)
+	UserBorrowBook(context.Context, *UserBorrowBookRequest) (*UserBorrowBookResponse, error)
+	UserReturnBook(context.Context, *UserReturnBookRequest) (*UserReturnBookResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -100,6 +126,12 @@ func (UnimplementedUserServiceServer) Authenticate(context.Context, *Authenticat
 }
 func (UnimplementedUserServiceServer) VerifyJWT(context.Context, *VerifyJWTRequest) (*VerifyJWTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyJWT not implemented")
+}
+func (UnimplementedUserServiceServer) UserBorrowBook(context.Context, *UserBorrowBookRequest) (*UserBorrowBookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserBorrowBook not implemented")
+}
+func (UnimplementedUserServiceServer) UserReturnBook(context.Context, *UserReturnBookRequest) (*UserReturnBookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserReturnBook not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -176,6 +208,42 @@ func _UserService_VerifyJWT_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UserBorrowBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserBorrowBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserBorrowBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserBorrowBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserBorrowBook(ctx, req.(*UserBorrowBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UserReturnBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserReturnBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserReturnBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserReturnBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserReturnBook(ctx, req.(*UserReturnBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -194,6 +262,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyJWT",
 			Handler:    _UserService_VerifyJWT_Handler,
+		},
+		{
+			MethodName: "UserBorrowBook",
+			Handler:    _UserService_UserBorrowBook_Handler,
+		},
+		{
+			MethodName: "UserReturnBook",
+			Handler:    _UserService_UserReturnBook_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

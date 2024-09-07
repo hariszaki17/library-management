@@ -17,6 +17,7 @@ type BookRepository interface {
 	CreateBookWithCtx(tx *gorm.DB, book *models.Book) (*models.Book, error)
 	UpdateBookWithCtx(tx *gorm.DB, existingModel *models.Book, updatedFields map[string]interface{}) (*models.Book, error)
 	DeleteBookWithCtx(tx *gorm.DB, id uint) error
+	GetBookByIDWithCtx(tx *gorm.DB, id uint) (*models.Book, error)
 	Begin(ctx context.Context) *gorm.DB
 	Commit(tx *gorm.DB) *gorm.DB
 	Rollback(tx *gorm.DB) *gorm.DB
@@ -86,6 +87,15 @@ func (r *bookRepository) DeleteBookWithCtx(tx *gorm.DB, id uint) error {
 	}
 
 	return nil
+}
+
+func (r *bookRepository) GetBookByIDWithCtx(tx *gorm.DB, id uint) (*models.Book, error) {
+	var book *models.Book
+	if err := tx.First(&book, id).Error; err != nil {
+		return nil, err
+	}
+
+	return book, nil
 }
 
 func (r *bookRepository) Commit(tx *gorm.DB) *gorm.DB {

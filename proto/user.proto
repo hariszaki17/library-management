@@ -43,10 +43,33 @@ message VerifyJWTResponse {
     User user = 1;
 }
 
+// The request message for the UserBorrowBook RPC
+message UserBorrowBookRequest {
+    uint64 user_id = 1;
+    uint64 book_id = 2;
+}
+
+// The response message for the UserBorrowBook RPC
+message UserBorrowBookResponse {
+    string message = 1;
+}
+
+// The request message for the UserReturnBook RPC
+message UserReturnBookRequest {
+    uint64 id = 1;
+}
+
+// The response message for the UserReturnBook RPC
+message UserReturnBookResponse {
+    string message = 1;
+}
+
 
 // The UserService service definition
 service UserService {
     rpc GetUserDetails(GetUserDetailsRequest) returns (GetUserDetailsResponse);
     rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
     rpc VerifyJWT(VerifyJWTRequest) returns (VerifyJWTResponse);
+    rpc UserBorrowBook(UserBorrowBookRequest) returns (UserBorrowBookResponse);
+    rpc UserReturnBook(UserReturnBookRequest) returns (UserReturnBookResponse);
 }

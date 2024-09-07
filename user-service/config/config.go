@@ -15,6 +15,7 @@ type Config struct {
 	RedistHost  string `env:"REDIS_HOST" env-default:"redis"`
 	SecretJWT   string `env:"SECRET_JWT" env-default:""`
 	ServiceName string `env:"SERVICE_NAME" env-default:"user-service"`
+	BookRPCAddress     string `env:"BOOK_RPC_ADDRESS" env-default:"book-service:50051"`
 }
 
 var (
