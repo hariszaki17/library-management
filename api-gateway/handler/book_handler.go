@@ -283,7 +283,7 @@ func (h *BookHandler) DeleteBook(c echo.Context) error {
 }
 
 // GetBookRecommendation godoc
-// @Summary Get a list of book recommendation with borrowing count
+// @Summary Get a list of book recommendation
 // @Description Retrieve a list of book recommendation from the gRPC service
 // @Tags Books
 // @Accept json
