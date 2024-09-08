@@ -246,7 +246,7 @@ Run the following command to generate proto:
 make gen
 ```
 
-#### Step 4: Generate the Swagger Documenation
+#### Step 4: Generate the Swagger Documentation
 
 Run the following command to generate swagger documentation:
 

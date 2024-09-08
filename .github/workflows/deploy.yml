@@ -16,6 +16,64 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Create .env files for services
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" > .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+
+          echo "USER_RPC_ADDRESS=${{ secrets.USER_RPC_ADDRESS }}" > ./api-gateway/.env
+          echo "BOOK_RPC_ADDRESS=${{ secrets.BOOK_RPC_ADDRESS }}" > ./api-gateway/.env
+          echo "AUTHOR_RPC_ADDRESS=${{ secrets.AUTHOR_RPC_ADDRESS }}" >> ./api-gateway/.env
+          echo "CATEGORY_RPC_ADDRESS=${{ secrets.CATEGORY_RPC_ADDRESS }}" >> ./api-gateway/.env
+          echo "APP_PORT=${{ secrets.APP_PORT }}" >> ./api-gateway/.env
+          echo "GRPC_PORT=${{ secrets.GRPC_PORT }}" >> ./api-gateway/.env
+          echo "SERVICE_NAME=${{ secrets.SERVICE_NAME_API_GATEWAY }}" >> ./api-gateway/.env
+
+          echo "DB_HOST=${{ secrets.DB_HOST }}" > ./user-service/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> ./user-service/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./user-service/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./user-service/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./user-service/.env
+          echo "GRPC_PORT=${{ secrets.GRPC_PORT }}" >> ./user-service/.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./user-service/.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./user-service/.env
+          echo "SECRET_JWT=${{ secrets.SECRET_JWT }}" >> ./user-service/.env
+          echo "SERVICE_NAME=${{ secrets.SERVICE_NAME_USER_SERVICE }}" >> ./user-service/.env
+          echo "BOOK_RPC_ADDRESS=${{ secrets.BOOK_RPC_ADDRESS }}" >> ./user-service/.env
+
+          echo "DB_HOST=${{ secrets.DB_HOST }}" > ./book-service/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> ./book-service/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./book-service/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./book-service/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./book-service/.env
+          echo "GRPC_PORT=${{ secrets.GRPC_PORT }}" >> ./book-service/.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./book-service/.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./book-service/.env
+          echo "SERVICE_NAME=${{ secrets.SERVICE_NAME_BOOK_SERVICE }}" >> ./book-service/.env
+          echo "USER_RPC_ADDRESS=${{ secrets.USER_RPC_ADDRESS }}" >> ./book-service/.env
+
+          echo "DB_HOST=${{ secrets.DB_HOST }}" > ./author-service/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> ./author-service/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./author-service/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./author-service/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./author-service/.env
+          echo "GRPC_PORT=${{ secrets.GRPC_PORT }}" >> ./author-service/.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./author-service/.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./author-service/.env
+          echo "SERVICE_NAME=${{ secrets.SERVICE_NAME_AUTHOR_SERVICE }}" >> ./author-service/.env
+
+          echo "DB_HOST=${{ secrets.DB_HOST }}" > ./category-service/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> ./category-service/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./category-service/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./category-service/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> ./category-service/.env
+          echo "GRPC_PORT=${{ secrets.GRPC_PORT }}" >> ./category-service/.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ./category-service/.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ./category-service/.env
+          echo "SERVICE_NAME=${{ secrets.SERVICE_NAME_CATEGORY_SERVICE }}" >> ./category-service/.env
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -74,5 +132,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd library-management
+            echo "DB_USER=${{ secrets.DB_USER }}" > .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
             docker-compose pull
             docker-compose up -d --build
