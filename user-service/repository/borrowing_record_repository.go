@@ -2,6 +2,10 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
 
 	"github.com/hariszaki17/library-management/proto/cache"
 	"github.com/hariszaki17/library-management/user-service/models"
@@ -13,6 +17,7 @@ type BorrowingRecordRepository interface {
 	UpdateBorrowingRecordWithCtx(tx *gorm.DB, existingModel *models.BorrowingRecord, updatedFields map[string]interface{}) (*models.BorrowingRecord, error)
 	GetBorrowingRecordByIDWithCtx(tx *gorm.DB, id uint) (*models.BorrowingRecord, error)
 	GetBorrowingCount(ctx context.Context) ([]*models.BorrowingCount, error)
+	GetBorrowingRecords(ctx context.Context, page, limit int) ([]*models.BorrowingRecord, error)
 	Begin(ctx context.Context) *gorm.DB
 	Commit(tx *gorm.DB) *gorm.DB
 	Rollback(tx *gorm.DB) *gorm.DB
@@ -67,6 +72,39 @@ func (r *borrowingRecordRepository) GetBorrowingCount(ctx context.Context) ([]*m
 	}
 
 	return result, nil
+}
+
+func (r *borrowingRecordRepository) GetBorrowingRecords(ctx context.Context, page, limit int) ([]*models.BorrowingRecord, error) {
+	cacheKey := fmt.Sprintf("GetBorrowingRecords,page:%d,limit:%d", page, limit)
+	cachedBorrowingRecord, err := r.cache.Get(cacheKey)
+	if err == nil && cachedBorrowingRecord != "" {
+		// Deserialize cachedBorrowingRecord and return
+		borrowingRecords := []*models.BorrowingRecord{}
+		err := json.Unmarshal([]byte(cachedBorrowingRecord), &borrowingRecords)
+		if err != nil {
+			return nil, err
+		}
+		return borrowingRecords, nil
+	}
+
+	// Calculate the correct offset
+	offset := (page - 1) * limit
+
+	var borrowingRecords []*models.BorrowingRecord
+	if err := r.db.WithContext(ctx).Limit(limit).Offset(offset).Find(&borrowingRecords).Error; err != nil {
+		return nil, err
+	}
+
+	// Cache the result
+	serializedBorrowingRecords, err := json.Marshal(borrowingRecords)
+	if err != nil {
+		return nil, err
+	}
+	err = r.cache.Set(cacheKey, string(serializedBorrowingRecords), time.Minute)
+	if err != nil {
+		log.Printf("Failed to set cache: %v", err)
+	}
+	return borrowingRecords, nil
 }
 
 func (r *borrowingRecordRepository) Commit(tx *gorm.DB) *gorm.DB {

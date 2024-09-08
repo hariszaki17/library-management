@@ -1,5 +1,9 @@
 package dto
 
+import (
+	pbUser "github.com/hariszaki17/library-management/proto/gen/user/proto"
+)
+
 // UserBorrowBookResponse represents the response structure for borrow a book
 // @Description User borrow book response data
 // @Example {"message": "Successfully user borrow a book"}
@@ -37,5 +41,39 @@ type UserReturnBookRequest struct {
 func ToUserReturnBookResponse(message string) UserReturnBookResponse {
 	return UserReturnBookResponse{
 		Message: message,
+	}
+}
+
+// GetBorrowingRecordsResponse represents the response structure for getting borrowing records
+// @Description A list of borrowing records
+// @Example {"borrowing_records": [{"id": 1, "user_id": 1, "book_id": 1, "borrowed_at": "2024-01-01T00:00:00Z", "returned_at": "2024-02-01T00:00:00Z"}]}
+type GetBorrowingRecordsResponse struct {
+	BorrowingRecords []*BorrowingRecords `json:"borrowing_records"`
+}
+
+// BorrowingRecords represents the borrowing records information
+// @Description BorrowingRecords details
+// @Example {"id": 1, "user_id": 1, "book_id": 1, "borrowed_at": "2024-01-01T00:00:00Z", "returned_at": "2024-02-01T00:00:00Z"}
+type BorrowingRecords struct {
+	ID     uint   `json:"id"`
+	UserID     uint   `json:"user_id"`
+	BookID     uint   `json:"book_id"`
+	BorrowedAt string `json:"borrowed_at"`
+	ReturnedAt string `json:"returned_at"`
+}
+
+func ToGetBorrowingRecordsResponse(borrowingRecords []*pbUser.BorrowingRecord) GetBorrowingRecordsResponse {
+	var res []*BorrowingRecords
+	for _, br := range borrowingRecords {
+		res = append(res, &BorrowingRecords{
+			ID:         uint(br.Id),
+			UserID:     uint(br.UserId),
+			BookID:     uint(br.BookId),
+			BorrowedAt: br.BorrowedAt,
+			ReturnedAt: br.ReturnedAt,
+		})
+	}
+	return GetBorrowingRecordsResponse{
+		BorrowingRecords: res,
 	}
 }

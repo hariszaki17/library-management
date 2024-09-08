@@ -31,3 +31,25 @@ func ToGetBorrowingCountResponse(borrowingCounts []*models.BorrowingCount) *pb.G
 		BorrowingCount: res,
 	}
 }
+
+func ToGetBorrowingRecordsResponse(borrowingRecords []*models.BorrowingRecord) *pb.GetBorrowingRecordsResponse {
+	var res []*pb.BorrowingRecord
+
+	for _, br := range borrowingRecords {
+		returnedAt := ""
+		if br.ReturnedAt != nil {
+			returnedAt = br.ReturnedAt.String()
+		}
+		res = append(res, &pb.BorrowingRecord{
+			Id:         uint64(br.ID),
+			UserId:     uint64(br.UserID),
+			BookId:     uint64(br.BookID),
+			BorrowedAt: br.BorrowedAt.String(),
+			ReturnedAt: returnedAt,
+		})
+	}
+
+	return &pb.GetBorrowingRecordsResponse{
+		BorrowingRecords: res,
+	}
+}

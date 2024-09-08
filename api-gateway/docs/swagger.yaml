@@ -70,6 +70,18 @@ definitions:
       title:
         type: string
     type: object
+  dto.BorrowingRecords:
+    description: BorrowingRecords details
+    properties:
+      book_id:
+        type: integer
+      borrowed_at:
+        type: string
+      returned_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   dto.Category:
     description: Category details
     properties:
@@ -200,6 +212,14 @@ definitions:
       books:
         items:
           $ref: '#/definitions/dto.Book'
+        type: array
+    type: object
+  dto.GetBorrowingRecordsResponse:
+    description: A list of borrowing records
+    properties:
+      borrowing_records:
+        items:
+          $ref: '#/definitions/dto.BorrowingRecords'
         type: array
     type: object
   dto.GetCategoriesResponse:
@@ -710,6 +730,47 @@ paths:
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
       summary: Create Borrowing Record
+      tags:
+      - BorrowBook
+  /borrow-book/records:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a paginated list of borrowing records from the gRPC service
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - default: 10
+        description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GetBorrowingRecordsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Get a list of borrowing records
       tags:
       - BorrowBook
   /borrow-book/return:

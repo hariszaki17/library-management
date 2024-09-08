@@ -43,7 +43,7 @@ swag:
 # Build services locally
 .PHONY: build-local
 build-local:
-	docker-compose -f docker-compose-local.yml up -d
+	docker-compose -f docker-compose-local.yml up -d --build
 
 # Remove services locally
 .PHONY: down-local

@@ -17,6 +17,15 @@ message BorrowingCount {
     uint64 count = 2;
 }
 
+// The BorrowingRecord message contains borrowing count information
+message BorrowingRecord {
+    uint64 id = 1;
+    uint64 user_id = 2;
+    uint64 book_id = 3;
+    string borrowed_at = 4;
+    string returned_at = 5;
+}
+
 // The request message for the GetUserDetails RPC
 message GetUserDetailsRequest {
     uint64 id = 1;
@@ -79,6 +88,16 @@ message GetBorrowingCountResponse {
     repeated BorrowingCount borrowing_count = 1;
 }
 
+// The request message for the GetBorrowingRecords RPC
+message GetBorrowingRecordsRequest {
+    uint64 page = 1;
+    uint64 limit = 2;
+}
+
+// The response message for the GetBorrowingRecords RPC
+message GetBorrowingRecordsResponse {
+    repeated BorrowingRecord borrowing_records = 1;
+}
 
 // The UserService service definition
 service UserService {
@@ -88,4 +107,5 @@ service UserService {
     rpc UserBorrowBook(UserBorrowBookRequest) returns (UserBorrowBookResponse);
     rpc UserReturnBook(UserReturnBookRequest) returns (UserReturnBookResponse);
     rpc GetBorrowingCount(GetBorrowingCountRequest) returns (GetBorrowingCountResponse);
+    rpc GetBorrowingRecords(GetBorrowingRecordsRequest) returns (GetBorrowingRecordsResponse);
 }

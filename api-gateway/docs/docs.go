@@ -610,6 +610,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/borrow-book/records": {
+            "get": {
+                "description": "Retrieve a paginated list of borrowing records from the gRPC service",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BorrowBook"
+                ],
+                "summary": "Get a list of borrowing records",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Number of items per page",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GetBorrowingRecordsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/borrow-book/return": {
             "post": {
                 "description": "User return a book from the gRPC service",
@@ -1041,6 +1101,24 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.BorrowingRecords": {
+            "description": "BorrowingRecords details",
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "borrowed_at": {
+                    "type": "string"
+                },
+                "returned_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.Category": {
             "description": "Category details",
             "type": "object",
@@ -1226,6 +1304,18 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/dto.Book"
+                    }
+                }
+            }
+        },
+        "dto.GetBorrowingRecordsResponse": {
+            "description": "A list of borrowing records",
+            "type": "object",
+            "properties": {
+                "borrowing_records": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.BorrowingRecords"
                     }
                 }
             }
