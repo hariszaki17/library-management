@@ -11,8 +11,8 @@ type AuthResponse struct {
 // @Description Authentication response data
 // @Example {"username": "johndoe"}
 type AuthRequest struct {
-	Username string `json:"username" validate:"required"`
-	Password string `json:"password" validate:"required"`
+	Username string `json:"username" validate:"required" example:"dudung"`
+	Password string `json:"password" validate:"required" example:"maman"`
 }
 
 func ToAuthResponse(token string) AuthResponse {

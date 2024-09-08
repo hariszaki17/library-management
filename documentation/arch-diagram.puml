@@ -1,4 +1,4 @@
-@startuml
+@startuml architecture
 !define RECTANGLE class
 
 RECTANGLE "API Gateway" as APIGW {

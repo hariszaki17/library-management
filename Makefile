@@ -34,3 +34,23 @@ gen:
 .PHONY: clean
 clean:
 	rm -rf $(PROTO_GEN_DIR)
+
+# Swagger generated files
+.PHONY: swag
+swag:
+	cd ./api-gateway && swag init && cd ../
+
+# Build services locally
+.PHONY: build-local
+build-local:
+	docker-compose -f docker-compose-local.yml up -d
+
+# Remove services locally
+.PHONY: down-local
+down-local:
+	docker-compose -f docker-compose-local.yml down
+
+# Seed data
+.PHONY: seed
+seed:
+	export $(cat .env | xargs) && cat ./seed.sql | docker exec -i library-management-postgres-1 psql -U "$$DB_USER" -d "$$DB_NAME"

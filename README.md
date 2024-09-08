@@ -203,8 +203,8 @@ Follow these steps to set up and run the library management system:
 
 - Go 1.23 or later
 - Docker and Docker Compose
-- PostgreSQL
-- Redis
+- Protoc (libprotoc 27.3)
+- Swagger CLI (swag version v1.16.3)
 
 #### Step 1: Clone the Repository
 
@@ -215,7 +215,7 @@ cd library-management
 
 #### Step 2: Set Up Environment Variables
 
-Create a `.env` file in each service directory (book-service, category-service, etc.) with the following content:
+Create a `.env` file based on `.env.example` in each service directory (book-service, category-service, etc.) with the following content:
 
 ```
 DB_HOST=postgres
@@ -229,53 +229,47 @@ REDIS_HOST=redis
 SERVICE_NAME=service_name
 ```
 
-Replace `your_db_user`, `your_db_password`, and `service_name` with appropriate values.
+Replace `your_db_user`, `your_db_password`, and `service_name` with appropriate values but make sure your it is match with `.env` located in the root repo.
 
-#### Step 3: Build the Services
-
-Run the following command to build all services:
-
-```bash
-make build
+```
+DB_USER=your_user
+DB_PASSWORD=your_password
+DB_NAME=your_db
+DB_PORT=5432
 ```
 
-#### Step 4: Set Up the Database
+#### Step 3: Generate the Proto
 
-Create the necessary databases for each service in PostgreSQL.
-
-#### Step 5: Run Migrations
-
-For each service, run the database migrations:
+Run the following command to generate proto:
 
 ```bash
-cd book-service
-go run migrations/migrate.go
-cd ../category-service
-go run migrations/migrate.go
-# Repeat for other services
+make gen
 ```
 
-#### Step 6: Start the Services
+#### Step 4: Generate the Swagger Documenation
 
-Use Docker Compose to start all services:
+Run the following command to generate swagger documentation:
 
 ```bash
-docker-compose up -d
+make swag
 ```
 
-This will start all the microservices, PostgreSQL, and Redis.
+#### Step 5: Build and Run the Services Locally
 
-#### Step 7: Seed the Database
-
-To populate the database with initial data, run the seed scripts for each service:
+Run the following command to build all services locally, this operation will auto migrate all table if not exists:
 
 ```bash
-psql -U your_db_user -d library_management -f book-service/book_seed.sql
-psql -U your_db_user -d library_management -f category-service/category_seed.sql
-# Repeat for other services
+make build-local
 ```
 
-#### Step 8: Verify the Setup
+#### Step 5: Run Seed
+
+Run the following command to seed sample data, make sure your `.env` properly set up:
+
+```bash
+make seed
+```
+#### Step 6: Verify the Setup
 
 Check if all services are running:
 
@@ -293,13 +287,3 @@ The API documentation is available at `http://194.163.43.39:8080/swagger/index.h
 
 - If you encounter any issues with gRPC connections, ensure that the ports are correctly mapped in the Docker Compose file.
 - For database connection issues, verify that the environment variables are set correctly in each service's `.env` file.
-
-### Contributing
-
-Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
-
-### License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-This README provides a comprehensive guide on how the library management system works and how to set it up. You may need to adjust some details based on the specific implementation and requirements of your project.

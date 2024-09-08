@@ -1,4 +1,4 @@
-@startuml
+@startuml erd
 entity "Book" {
   +ID : bigint <<PK>>
   +Title : string
