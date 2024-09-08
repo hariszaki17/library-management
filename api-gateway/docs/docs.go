@@ -416,7 +416,7 @@ const docTemplate = `{
                 "tags": [
                     "Books"
                 ],
-                "summary": "Get a list of book recommendation",
+                "summary": "Get a list of book recommendation with borrowing count",
                 "parameters": [
                     {
                         "type": "string",
@@ -945,10 +945,12 @@ const docTemplate = `{
             ],
             "properties": {
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "maman"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "dudung"
                 }
             }
         },

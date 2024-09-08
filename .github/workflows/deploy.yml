@@ -24,7 +24,7 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
 
           echo "USER_RPC_ADDRESS=${{ secrets.USER_RPC_ADDRESS }}" > ./api-gateway/.env
-          echo "BOOK_RPC_ADDRESS=${{ secrets.BOOK_RPC_ADDRESS }}" > ./api-gateway/.env
+          echo "BOOK_RPC_ADDRESS=${{ secrets.BOOK_RPC_ADDRESS }}" >> ./api-gateway/.env
           echo "AUTHOR_RPC_ADDRESS=${{ secrets.AUTHOR_RPC_ADDRESS }}" >> ./api-gateway/.env
           echo "CATEGORY_RPC_ADDRESS=${{ secrets.CATEGORY_RPC_ADDRESS }}" >> ./api-gateway/.env
           echo "APP_PORT=${{ secrets.APP_PORT }}" >> ./api-gateway/.env
